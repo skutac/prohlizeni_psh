@@ -1,0 +1,33 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
+    <title>PSH Manager Online</title>
+    <link href='http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css' />
+    <link rel="stylesheet" href="/prohlizeni_psh/static/css/style.css" type="text/css" />
+    <script type="text/javascript" src="/prohlizeni_psh/static/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/prohlizeni_psh/static/js/psh_scripts.js"></script>
+    <script type="text/javascript" src="/prohlizeni_psh/static/js/jquery-ui-1.8.10.custom.min.js"></script>
+</head>
+<script type="text/javascript">
+</script>
+
+<body>
+<div id="nav">
+<div id="search">
+<input type="text" id="pshSuggest" size="20"/>
+<div id="searchTitle">Vyhledávání - <span id="searchLanguage">čeština</div>
+</div>
+<a href="http://www.techlib.cz" target=blank><img id="logoNTK" src="/prohlizeni_psh/static/img/ntk_logo.png" title="Stránky NTK"/></a>
+<a href="http://www.techlib.cz/cs/14-psh" target=blank><img id="logoPSH" src="/prohlizeni_psh/static/img/psh_logo.png" title="Stránky PSH"/></a>
+
+<a href="http://cs.wikipedia.org/wiki/Antropologie" target=blank><img id="logoWikipedia" src="/prohlizeni_psh/static/img/wikipedia-logo.png" title="Odkaz na Wikipedii"/></a>
+
+<img id="english" class="inactive" title="Vyhledávat v angličtině ANO/NE" src="/prohlizeni_psh/static/img/english.png" />
+
+</div>
+<div id="content">
+{% block content %}{% endblock %}
+</div>
+</body>
+</html>

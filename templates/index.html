@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div id="scrollDiv">
+    <div id="scrollable">
+    <div id="gradient-top"></div>
+    	<ul id="mainTree">
+        {% for heslo in hesla %}
+            <li><a href="http://data.ntkcz.cz/prohlizeni_psh/{{heslo.id_heslo}}">{{ heslo.heslo }}</a></li>
+        {% endfor %}
+        </ul>
+    </div>
+</div>
+<div id="concept">{% autoescape off %}{{ concept }}{% endautoescape %}</div>
+{% endblock %}
