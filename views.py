@@ -154,140 +154,104 @@ def get_subject_id(request):
 
 def get_concept(request, subject_id):
     """Interface for subject retrieval"""
-    hesla = []
-    try:
-        current_subjects = Hierarchie.objects.filter(nadrazeny=subject_id)
-        for heslo in current_subjects:
-            hesla.append(Hesla.objects.get(id_heslo=heslo.podrazeny))
-        hesla.sort(key=lambda x: x.heslo)
+    return get_concept_as_json("", subject_id)
+    #hesla = []
+    #try:
+        #pass
+        #current_subjects = Hierarchie.objects.filter(nadrazeny=subject_id)
+        #for heslo in current_subjects:
+            #hesla.append(Hesla.objects.get(id_heslo=heslo.podrazeny))
+        #hesla.sort(key=lambda x: x.heslo)
         
-        #return HttpResponse(getConceptAsJSON(request.POST["subjectID"]))
-        return render_to_response("index.html", {"hesla":hesla})
-    except Exception, e:
-        raise Http404
+        ##return HttpResponse(getConceptAsJSON(request.POST["subjectID"]))
+        #return render_to_response("index.html", {"hesla":hesla})
+    #except Exception, e:
+        #raise Http404
 
-def get_concept_as_json(request):
+def get_concept_as_json(request, subject_id=None, lang="cs", callback=None):
         """Get concept form database according to its PSH ID"""
-        if request.GET.get("subject_id"):
-            if request.GET.get("lang") and request.GET["lang"] == "en":
+        try:
+            if request.GET.get("subject_id"):
+                subject_id = request.GET.get("subject_id")
+
+            if request.GET.get("lang"):
+                lang = request.GET.get("lang")
+            
+            if request.GET.get("callback"):
+                callback = request.GET.get("callback")
+        except:
+            pass
+
+        if lang and subject_id:
+            if lang == "en":
                 heslo = query_to_dicts("""SELECT ekvivalence.id_heslo, 
                 ekvivalence.ekvivalent as heslo
                 FROM ekvivalence
-                WHERE ekvivalence.id_heslo = '%s'""" %request.GET["subject_id"])
+                WHERE ekvivalence.id_heslo = '%s'""" %subject_id)
     
                 podrazeny = query_to_dicts("""SELECT podrazeny,
                 ekvivalence.ekvivalent as heslo 
                 FROM hierarchie
                 LEFT JOIN ekvivalence ON ekvivalence.id_heslo = hierarchie.podrazeny
-                WHERE nadrazeny = '%s'""" %request.GET["subject_id"])
-                
+                WHERE nadrazeny = '%s'""" %subject_id)
+    
                 nadrazeny = query_to_dicts("""SELECT nadrazeny,
                 ekvivalence.ekvivalent as heslo 
                 FROM hierarchie
                 LEFT JOIN ekvivalence ON ekvivalence.id_heslo = hierarchie.nadrazeny
-                WHERE podrazeny = '%s'""" %request.GET["subject_id"])
-                
+                WHERE podrazeny = '%s'""" %subject_id)
+    
                 pribuzny = query_to_dicts("""SELECT pribuzny,
                 ekvivalence.ekvivalent as heslo
                 FROM pribuznost
                 LEFT JOIN ekvivalence ON ekvivalence.id_heslo = pribuznost.pribuzny
-                WHERE pribuznost.id_heslo = '%s'""" %request.GET["subject_id"])
+                WHERE pribuznost.id_heslo = '%s'""" %subject_id)
 
-            else:
+            elif lang == "cs":
                 heslo = query_to_dicts("""SELECT hesla.id_heslo, 
                 hesla.heslo 
                 FROM hesla
-                WHERE hesla.id_heslo = '%s'""" %request.GET["subject_id"])
+                WHERE hesla.id_heslo = '%s'""" %subject_id)
     
                 podrazeny = query_to_dicts("""SELECT podrazeny,
                 hesla.heslo 
                 FROM hierarchie
                 LEFT JOIN hesla ON hesla.id_heslo = hierarchie.podrazeny
-                WHERE nadrazeny = '%s'""" %request.GET["subject_id"])
-                
+                WHERE nadrazeny = '%s'""" %subject_id)
+    
                 nadrazeny = query_to_dicts("""SELECT nadrazeny,
                 hesla.heslo 
                 FROM hierarchie
                 LEFT JOIN hesla ON hesla.id_heslo = hierarchie.nadrazeny
-                WHERE podrazeny = '%s'""" %request.GET["subject_id"])
-                
+                WHERE podrazeny = '%s'""" %subject_id)
+    
                 pribuzny = query_to_dicts("""SELECT pribuzny,
                 hesla.heslo 
                 FROM pribuznost
                 LEFT JOIN hesla ON hesla.id_heslo = pribuznost.pribuzny
-                WHERE pribuznost.id_heslo = '%s'""" %request.GET["subject_id"])
+                WHERE pribuznost.id_heslo = '%s'""" %subject_id)
 
-            heslo = dict(list(heslo)[0])
+        if list(heslo):
+            heslo = dict(list(heslo))
+
             for n in nadrazeny:
                 heslo["nadrazeny"] = [{"id_heslo":n["nadrazeny"], "heslo":n["heslo"]}]
 
             heslo["podrazeny"] = []
             heslo["pribuzny"] = []
-            
+
             for p in podrazeny:
                     heslo["podrazeny"].append({"id_heslo":p["podrazeny"], "heslo":p["heslo"]})
-
             for p in pribuzny:
                     heslo["pribuzny"].append({"id_heslo":p["pribuzny"], "heslo":p["heslo"]})
+        else:
+            heslo = ""
 
-            if request.GET.get("callback"):
-                return HttpResponse("".join([request.GET["callback"], "(", json.dumps(heslo), ")"]))
-            else:
-                return HttpResponse(json.dumps(heslo), mimetype='application/json')
-        #none = "<li>-</li>"
-        #try:
-            #heslo = Hesla.objects.get(id_heslo=subjectID)
-            #titleCS = heslo.heslo
-            #acronym = Zkratka.objects.get(id_heslo=subjectID).zkratka
-            #titleEN = Ekvivalence.objects.get(id_heslo=subjectID).ekvivalent
-            #sysno = SysNumber.objects.get(id_heslo=subjectID).sysnumber
-            
-            #narrowerID = Hierarchie.objects.filter(nadrazeny=subjectID)
-            #narrowerObj = [Hesla.objects.get(id_heslo=narrow.podrazeny) for narrow in narrowerID]
-            #narrowerObj.sort(key=lambda subject: subject.heslo.lower())
-            #narrower = []
-            #if len(narrowerObj) > 0:
-                #for narrow in narrowerObj:
-                        #narrower.append(u"<li itemid='%s' class='clickable'>%s</li>"%(narrow.id_heslo, narrow.heslo))
-            #else:
-                #narrower = none
-                
-            #try:
-                #broader = Hierarchie.objects.get(podrazeny=subjectID)
-                #broader = u"<li itemid='%s' class='clickable'>%s</li>"%(broader.nadrazeny ,Hesla.objects.get(id_heslo=broader.nadrazeny).heslo)
-            #except:
-                #broader = none
-            
-            #variantaCS = Varianta.objects.filter(id_heslo=subjectID, jazyk="cs").order_by("varianta")
-            #nonprefCS = []
-            #if len(variantaCS) > 0:
-                #for var in variantaCS:
-                    #nonprefCS.append("".join(["<li>", var.varianta, "</li>"]))
-            #else:
-                #nonprefCS = none
-    
-            #variantaEN = Varianta.objects.filter(id_heslo=subjectID, jazyk="en").order_by("varianta")
-            #nonprefEN = []
-            #if len(variantaEN) > 0:
-                #for var in variantaEN:
-                    #nonprefEN.append("".join(["<li>", var.varianta, "</li>"]))
-            #else:
-                #nonprefEN = none
-            
-            #relatedID = Pribuznost.objects.filter(id_heslo=subjectID)
-            #relatedObj = [Hesla.objects.get(id_heslo=related.pribuzny) for related in relatedID]
-            #relatedObj.sort(key=lambda subject: subject.heslo.lower())
-            #related = []
-            #if len(relatedObj) > 0:
-                #for obj in relatedObj:
-                    #related.append(u"<li itemid='%s' class='clickable'>%s</li>"%(obj.id_heslo, obj.heslo))
-            #else:
-                #related = none
-            #return conceptTable%(titleCS, acronym, titleEN, sysno, subjectID, "".join(nonprefCS), "".join(nonprefEN), "".join(related), broader, "".join(narrower))
-            
-        #except Exception, e:
-            #return str(e)
-    
+        if callback:
+            return HttpResponse("".join([callback, "(", json.dumps(heslo), ")"]))
+        else:
+            return HttpResponse(json.dumps(heslo), mimetype='application/json')
+
 def getWikipediaLink(request):
     """Check for wikipedia link"""
     subjectID = request.POST["subjectID"]
