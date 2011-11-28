@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
-    <title>PSH Manager Online</title>
+    <title>Prohlížení PSH</title>
     <link href='http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css' />
     <link rel="stylesheet" href="/prohlizeni_psh/static/css/style.css" type="text/css" />
     <script type="text/javascript" src="/prohlizeni_psh/static/js/jquery.min.js"></script>
@@ -23,7 +23,7 @@
 
 <a href="http://cs.wikipedia.org/wiki/Antropologie" target=blank><img id="logoWikipedia" src="/prohlizeni_psh/static/img/wikipedia-logo.png" title="Odkaz na Wikipedii"/></a>
 
-<img id="english" class="inactive" title="Vyhledávat v angličtině ANO/NE" src="/prohlizeni_psh/static/img/english.png" />
+<img id="english" data-lang="inactive" title="Vyhledávat v angličtině ANO/NE" src="/prohlizeni_psh/static/img/english.png" />
 
 </div>
 <div id="content">

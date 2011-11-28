@@ -71,6 +71,7 @@ function getSuggestedSubject(subject){
                             getSearchResult(subject, english);
                         }
                         else{
+                            alert(subjectID);
                             var current = $('#' + subjectID);
                             getConcept(subjectID);
                             saveToCache(subject, subjectID);

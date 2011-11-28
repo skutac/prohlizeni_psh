@@ -19,6 +19,8 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     (r'^$', 'views.index'),
     (r'^(?P<subject_id>PSH\d+)$', 'views.get_concept'),
+    (r'^getjson$', 'views.get_concept_as_json'),
+    (r'^get_subject_id$', 'views.get_subject_id'),
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': os.path.join(settings.ROOT, 'static')}),
     (r'^suggest$', 'views.suggest'),
 )
