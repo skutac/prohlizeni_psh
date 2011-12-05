@@ -154,19 +154,88 @@ def get_subject_id(request):
 
 def get_concept(request, subject_id):
     """Interface for subject retrieval"""
-    return get_concept_as_json("", subject_id)
-    #hesla = []
-    #try:
-        #pass
-        #current_subjects = Hierarchie.objects.filter(nadrazeny=subject_id)
-        #for heslo in current_subjects:
-            #hesla.append(Hesla.objects.get(id_heslo=heslo.podrazeny))
-        #hesla.sort(key=lambda x: x.heslo)
+    return render_to_response("concept.html", {"concept": get_concept_dict(subject_id, "cs")})
+
+def get_concept_dict(subject_id, lang):
+    if lang == "en":
+        heslo = query_to_dicts("""SELECT ekvivalence.id_heslo, 
+                ekvivalence.ekvivalent as heslo
+                FROM ekvivalence
+                WHERE ekvivalence.id_heslo = '%s'""" %subject_id)
+    
+        podrazeny = query_to_dicts("""SELECT podrazeny,
+                ekvivalence.ekvivalent as heslo 
+                FROM hierarchie
+                LEFT JOIN ekvivalence ON ekvivalence.id_heslo = hierarchie.podrazeny
+                WHERE nadrazeny = '%s'""" %subject_id)
+    
+        nadrazeny = query_to_dicts("""SELECT nadrazeny,
+                ekvivalence.ekvivalent as heslo 
+                FROM hierarchie
+                LEFT JOIN ekvivalence ON ekvivalence.id_heslo = hierarchie.nadrazeny
+                WHERE podrazeny = '%s'""" %subject_id)
+    
+        pribuzny = query_to_dicts("""SELECT pribuzny,
+                ekvivalence.ekvivalent as heslo
+                FROM pribuznost
+                LEFT JOIN ekvivalence ON ekvivalence.id_heslo = pribuznost.pribuzny
+                WHERE pribuznost.id_heslo = '%s'""" %subject_id)
         
-        ##return HttpResponse(getConceptAsJSON(request.POST["subjectID"]))
-        #return render_to_response("index.html", {"hesla":hesla})
-    #except Exception, e:
-        #raise Http404
+        varianta = query_to_dicts("""SELECT varianta
+                FROM varianta
+                WHERE varianta.jazyk = 'en' AND varianta.id_heslo = '%s'""" %subject_id)
+
+    elif lang == "cs":
+        heslo = query_to_dicts("""SELECT hesla.id_heslo, 
+                hesla.heslo 
+                FROM hesla
+                WHERE hesla.id_heslo = '%s'""" %subject_id)
+    
+        podrazeny = query_to_dicts("""SELECT podrazeny,
+                hesla.heslo 
+                FROM hierarchie
+                LEFT JOIN hesla ON hesla.id_heslo = hierarchie.podrazeny
+                WHERE nadrazeny = '%s'""" %subject_id)
+    
+        nadrazeny = query_to_dicts("""SELECT nadrazeny,
+                hesla.heslo 
+                FROM hierarchie
+                LEFT JOIN hesla ON hesla.id_heslo = hierarchie.nadrazeny
+                WHERE podrazeny = '%s'""" %subject_id)
+    
+        pribuzny = query_to_dicts("""SELECT pribuzny,
+                hesla.heslo 
+                FROM pribuznost
+                LEFT JOIN hesla ON hesla.id_heslo = pribuznost.pribuzny
+                WHERE pribuznost.id_heslo = '%s'""" %subject_id)
+                
+        varianta = query_to_dicts("""SELECT varianta
+                FROM varianta
+                WHERE varianta.jazyk = 'cs' AND varianta.id_heslo = '%s'""" %subject_id)
+    else:
+        heslo = ""
+        
+    heslo = list(heslo)
+    if heslo:
+        heslo = heslo[0]
+
+        for n in nadrazeny:
+            heslo["nadrazeny"] = [{"id_heslo":n["nadrazeny"], "heslo":n["heslo"]}]
+
+        heslo["podrazeny"] = []
+        heslo["pribuzny"] = []
+        heslo["nepreferovany"] = []
+
+        for p in podrazeny:
+                heslo["podrazeny"].append({"id_heslo":p["podrazeny"], "heslo":p["heslo"]})
+        for p in pribuzny:
+                heslo["pribuzny"].append({"id_heslo":p["pribuzny"], "heslo":p["heslo"]})
+        for v in varianta:
+                heslo["nepreferovany"].append(v["varianta"])
+    else:
+        heslo = ""
+    return heslo
+
 
 def get_concept_as_json(request, subject_id=None, lang="cs", callback=None):
         """Get concept form database according to its PSH ID"""
@@ -182,70 +251,7 @@ def get_concept_as_json(request, subject_id=None, lang="cs", callback=None):
         except:
             pass
 
-        if lang and subject_id:
-            if lang == "en":
-                heslo = query_to_dicts("""SELECT ekvivalence.id_heslo, 
-                ekvivalence.ekvivalent as heslo
-                FROM ekvivalence
-                WHERE ekvivalence.id_heslo = '%s'""" %subject_id)
-    
-                podrazeny = query_to_dicts("""SELECT podrazeny,
-                ekvivalence.ekvivalent as heslo 
-                FROM hierarchie
-                LEFT JOIN ekvivalence ON ekvivalence.id_heslo = hierarchie.podrazeny
-                WHERE nadrazeny = '%s'""" %subject_id)
-    
-                nadrazeny = query_to_dicts("""SELECT nadrazeny,
-                ekvivalence.ekvivalent as heslo 
-                FROM hierarchie
-                LEFT JOIN ekvivalence ON ekvivalence.id_heslo = hierarchie.nadrazeny
-                WHERE podrazeny = '%s'""" %subject_id)
-    
-                pribuzny = query_to_dicts("""SELECT pribuzny,
-                ekvivalence.ekvivalent as heslo
-                FROM pribuznost
-                LEFT JOIN ekvivalence ON ekvivalence.id_heslo = pribuznost.pribuzny
-                WHERE pribuznost.id_heslo = '%s'""" %subject_id)
-
-            elif lang == "cs":
-                heslo = query_to_dicts("""SELECT hesla.id_heslo, 
-                hesla.heslo 
-                FROM hesla
-                WHERE hesla.id_heslo = '%s'""" %subject_id)
-    
-                podrazeny = query_to_dicts("""SELECT podrazeny,
-                hesla.heslo 
-                FROM hierarchie
-                LEFT JOIN hesla ON hesla.id_heslo = hierarchie.podrazeny
-                WHERE nadrazeny = '%s'""" %subject_id)
-    
-                nadrazeny = query_to_dicts("""SELECT nadrazeny,
-                hesla.heslo 
-                FROM hierarchie
-                LEFT JOIN hesla ON hesla.id_heslo = hierarchie.nadrazeny
-                WHERE podrazeny = '%s'""" %subject_id)
-    
-                pribuzny = query_to_dicts("""SELECT pribuzny,
-                hesla.heslo 
-                FROM pribuznost
-                LEFT JOIN hesla ON hesla.id_heslo = pribuznost.pribuzny
-                WHERE pribuznost.id_heslo = '%s'""" %subject_id)
-
-        if list(heslo):
-            heslo = dict(list(heslo))
-
-            for n in nadrazeny:
-                heslo["nadrazeny"] = [{"id_heslo":n["nadrazeny"], "heslo":n["heslo"]}]
-
-            heslo["podrazeny"] = []
-            heslo["pribuzny"] = []
-
-            for p in podrazeny:
-                    heslo["podrazeny"].append({"id_heslo":p["podrazeny"], "heslo":p["heslo"]})
-            for p in pribuzny:
-                    heslo["pribuzny"].append({"id_heslo":p["pribuzny"], "heslo":p["heslo"]})
-        else:
-            heslo = ""
+        heslo = get_concept_dict(subject_id, lang)
 
         if callback:
             return HttpResponse("".join([callback, "(", json.dumps(heslo), ")"]))
