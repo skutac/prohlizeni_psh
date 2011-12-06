@@ -1,0 +1,53 @@
+#visualization  {
+  position: absolute;
+  width: 65%;
+  min-width: 400px;
+  margin: 2.7em 2em 0 0;
+}
+#textLayer {
+  font-family: Arial, sans-serif;
+  list-style-type: none;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  text-align: center;
+}
+#textLayer li, #textLayer a {
+  font-size: small;
+  font-weight: bold;
+  border: 0;
+  position: absolute;
+}
+#textLayer a {
+  text-decoration: none;
+  padding: 2px 2px 2px 20px;
+  display: block;
+  white-space: nowrap;
+  color: #000;
+  background: url('img/big_sprite.png') no-repeat;
+}
+/* Nadřazený */
+#textLayer .nadrazeny {
+  background-position: -7px -6px;
+}
+#textLayer .nadrazeny:hover, .nadrazeny:focus {
+  background-position: -7px -34px;
+}
+/* Příbuzný */
+#textLayer .pribuzny {
+  background-position: -7px -118px;
+}
+#textLayer .pribuzny:hover, #textLayer .pribuzny:focus {
+  background-position: -7px -146px;
+}
+/* Podřazený */
+#textLayer .podrazeny {
+  background-position: -7px -62px;
+}
+#textLayer .podrazeny:hover, #textLayer .podrazeny:focus {
+  background-position: -7px -90px;
+}
