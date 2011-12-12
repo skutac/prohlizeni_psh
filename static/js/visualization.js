@@ -4,7 +4,7 @@ PSH.Visualization = function (id_container, params) {
   // inicializace proměnných
   this.$container = $("#" + id_container);
   this.id_concept = (params && params.id_concept) ? params.id_concept : false;
-  this.lang = (params && params.lang) ? params.lang false; // "cs" nebo "en"
+  this.lang = (params && params.lang) ? params.lang : false; // "cs" nebo "en"
   this.canvas = false;
   this.canvaswidth = false; // cachování často užívaných DOM vlastností
   this.canvasheight = false;
