@@ -3,8 +3,10 @@ import simplejson as json
 import re
 from itertools import *
 
-from psh_manager_online import handler
-from psh_manager_online.psh.models import Hesla, Varianta, Ekvivalence, Hierarchie, Topconcepts, Pribuznost, Zkratka, Vazbywikipedia, SysNumber
+# from psh_manager_online import handler
+# from psh_manager_online.psh.models import Hesla, Varianta, Ekvivalence, Hierarchie, Topconcepts, Pribuznost, Zkratka, Vazbywikipedia, SysNumber
+
+from prohlizeni_psh.psh.models import Topconcepts, Hesla, Varianta, Ekvivalence
 
 from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response
@@ -48,6 +50,7 @@ def index(request):
     
 def suggest(request):
     """Return suggested labels according to given text input and language selector"""
+    print "suggest"
     text_input = request.GET["input"]
     if request.GET["lang"] == "cs":
         hesla = Hesla.objects.filter(heslo__istartswith=text_input)
@@ -157,11 +160,16 @@ def get_concept(request, subject_id):
     return render_to_response("concept.html", {"concept": get_concept_dict(subject_id, "cs")})
 
 def get_concept_dict(subject_id, lang):
+
     if lang == "en":
         heslo = query_to_dicts("""SELECT ekvivalence.id_heslo, 
                 ekvivalence.ekvivalent as heslo
                 FROM ekvivalence
                 WHERE ekvivalence.id_heslo = '%s'""" %subject_id)
+
+        ekvivalent = query_to_dicts("""SELECT heslo as ekvivalent
+                FROM hesla
+                WHERE id_heslo = '%s'""" %subject_id)
     
         podrazeny = query_to_dicts("""SELECT podrazeny,
                 ekvivalence.ekvivalent as heslo 
@@ -190,6 +198,10 @@ def get_concept_dict(subject_id, lang):
                 hesla.heslo 
                 FROM hesla
                 WHERE hesla.id_heslo = '%s'""" %subject_id)
+
+        ekvivalent = query_to_dicts("""SELECT ekvivalent
+                FROM ekvivalence
+                WHERE id_heslo = '%s'""" %subject_id)
     
         podrazeny = query_to_dicts("""SELECT podrazeny,
                 hesla.heslo 
@@ -212,6 +224,7 @@ def get_concept_dict(subject_id, lang):
         varianta = query_to_dicts("""SELECT varianta
                 FROM varianta
                 WHERE varianta.jazyk = 'cs' AND varianta.id_heslo = '%s'""" %subject_id)
+
     else:
         heslo = ""
         
@@ -221,6 +234,8 @@ def get_concept_dict(subject_id, lang):
 
         for n in nadrazeny:
             heslo["nadrazeny"] = [{"id_heslo":n["nadrazeny"], "heslo":n["heslo"]}]
+
+        heslo["ekvivalent"] = list(ekvivalent)[0]["ekvivalent"]
 
         heslo["podrazeny"] = []
         heslo["pribuzny"] = []

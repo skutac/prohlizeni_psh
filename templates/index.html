@@ -7,7 +7,7 @@
         <div class="title">Hlavní hesla</div>
     	<ul id="top_concepts">
         {% for heslo in hesla %}
-            <li class="clickable"><a href="http://data.ntkcz.cz/prohlizeni_psh/{{heslo.id_heslo}}">{{ heslo.heslo }}</a></li>
+            <li class="clickable"><a href="{{heslo.id_heslo}}">{{ heslo.heslo }}</a></li>
         {% endfor %}
         </ul>
     </div>

@@ -17,10 +17,10 @@ urlpatterns = patterns('',
 
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
-    (r'^$', 'views.index'),
-    (r'^(?P<subject_id>PSH\d+)$', 'views.get_concept'),
+    (r'^skos/$', 'views.index'),
+    (r'^skos/(?P<subject_id>PSH\d+)$', 'views.get_concept'),
     (r'^getjson$', 'views.get_concept_as_json'),
     (r'^get_subject_id$', 'views.get_subject_id'),
-    (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': os.path.join(settings.ROOT, 'static')}),
+    (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': os.path.join(settings.ROOT, 'static').replace('\\','/')}),
     (r'^suggest$', 'views.suggest'),
 )

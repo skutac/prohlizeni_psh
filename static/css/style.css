@@ -84,14 +84,14 @@ margin-left: 33%;
 margin-top: 15px;
 }
 
-#top_concepts a, #narrower a{
+#top_concepts a, #narrower a, #related a, #broader a {
   background: url('../img/big_sprite.png') no-repeat -7px -64px;
   padding-left: 25px;
   color: black;
   text-decoration: none;
 }
 
-#top_concepts a:hover, #narrower a:hover{
+#top_concepts a:hover, #narrower a:hover, #related a:hover, #broader a:hover{
 cursor: pointer;
 font-weight: bold;
 background: url('../img/big_sprite.png') no-repeat -7px -92px;
@@ -160,7 +160,7 @@ padding-left: 15px;
 background-color: white;
 }
 
-#pshSuggest{
+#psh_suggest{
 width: 250px;
 font-size: 14px;
 padding-left: 5px;

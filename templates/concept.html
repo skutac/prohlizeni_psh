@@ -5,26 +5,56 @@
     <div id="scrollable">
     <div id="gradient-top"></div>
         <div class="title">{{ concept.heslo }}</div>
+
+        <div class="sublabel">Uri: <a href="http://psh.ntkcz.cz/skos/{{ concept.id_heslo }}">http://psh.ntkcz.cz/skos/{{ concept.id_heslo }}</a></div>
+
+        <div class="sublabel">Anglické znění</div>
+        <ul id="ekvivalent">
+            <li class="">{{ concept.ekvivalent }}</li>
+        </ul>
         
         <div class="sublabel">Nepreferovaná znění</div>
-    	<ul id="narrower">
-        {% for heslo in concept.nepreferovany %}
-            <li class="">{{ heslo }}</li>
-        {% endfor %}
+    	<ul id="nonprefered">
+        {% if concept.nepreferovany %}
+            {% for heslo in concept.nepreferovany %}
+                <li class="">{{ heslo }}</li>
+            {% endfor %}
+        {% else %}
+            <li>-</li>
+        {% endif %}
+        </ul>
+
+        <div class="sublabel">Nadřazené heslo</div>
+        <ul id="broader">
+        {% if concept.nadrazeny %}
+            {% for heslo in concept.nadrazeny %}
+                <li class="clickable"><a href="{{heslo.id_heslo}}">{{ heslo.heslo }}</a></li>
+            {% endfor %}
+        {% else %}
+            <li>-</li>
+        {% endif %}
         </ul>
         
         <div class="sublabel">Příbuzná hesla</div>
-    	<ul id="narrower">
-        {% for heslo in concept.pribuzny %}
-            <li class="clickable"><a href="http://data.ntkcz.cz/prohlizeni_psh/{{heslo.id_heslo}}">{{ heslo.heslo }}</a></li>
-        {% endfor %}
+    	<ul id="related">
+        {% if concept.pribuzny %}
+            {% for heslo in concept.pribuzny %}
+                <li class="clickable"><a href="{{heslo.id_heslo}}">{{ heslo.heslo }}</a></li>
+            {% endfor %}
+        {% else %}
+            <li>-</li>
+        {% endif %}
         </ul>
         
         <div class="sublabel">Podřazená hesla</div>
     	<ul id="narrower">
-        {% for heslo in concept.podrazeny %}
-            <li class="clickable"><a href="http://data.ntkcz.cz/prohlizeni_psh/{{heslo.id_heslo}}">{{ heslo.heslo }}</a></li>
-        {% endfor %}
+        {% if concept.podrazeny %}
+            {% for heslo in concept.podrazeny %}
+                <li class="clickable"><a href="{{heslo.id_heslo}}">{{ heslo.heslo }}</a></li>
+            {% endfor %}
+        {% else %}
+            <li>-</li>
+        {% endif %}
         </ul>
     </div>
 </div>
