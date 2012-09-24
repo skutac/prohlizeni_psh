@@ -14,7 +14,7 @@ $(document).ready(function(){
             $("#search_form").submit();
         }
         $.ajax({type : "GET",
-               url : "suggest",
+               url : "/suggest",
                datatype: "json",
                success: function(subjects){
                       $("#psh_suggest").autocomplete({source: subjects});},

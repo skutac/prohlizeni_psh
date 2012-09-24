@@ -89,45 +89,52 @@ def suggest(request):
             
     return HttpResponse(json.dumps(seznam[0:60]), mimetype='application/json')
 
-def getSearchResult(request):
+def search(request):
     """Return HTML site with search results to given text input and language selector"""
-    try:
-        substring = request.POST['substring']
-        english = request.POST['english']
-        result = []
-        result.append("".join([u"<h3>Výsledek hledání pro text <i>'", substring, "'</i>:</h3>"]))
-        result.append("<ul id='searchResult'>")
-        if english == "inactive":
-            subjects = Hesla.objects.filter(heslo__istartswith = substring).order_by("heslo")
-            result.extend(["".join(["<li itemid='", subject.id_heslo ,"' class='clickable'>", bold(substring, subject.heslo), "</li>"]) for subject in subjects])
+    term = request.GET['term']
+    lang = request.GET['lang']
+
+    preferred = []
+    nonpreferred = []
+
+    if lang == "cs":
+        subjects = Hesla.objects.filter(heslo__istartswith = term).order_by("heslo")
+        subjects = [{"id_heslo": s.id_heslo, "heslo":bold(term,s.heslo)} for s in subjects]
+        preferred.extend(subjects)
+
+        subjects = Hesla.objects.filter(heslo__contains = term).order_by("heslo").exclude(heslo__istartswith=term)
+        subjects = [{"id_heslo": s.id_heslo, "heslo":bold(term,s.heslo)} for s in subjects]
+        preferred.extend(subjects)
+
+    else:
+        pass
+
+    subjects = Varianta.objects.filter(varianta__istartswith = term, jazyk=lang).order_by("varianta")
+    subjects = [{"id_heslo": s.id_heslo, "varianta":bold(term, s.varianta), "heslo":bold(term, s.id_heslo.heslo)} for s in subjects]
+    nonpreferred.extend(subjects)
             
-            subjects = Varianta.objects.filter(varianta__istartswith = substring, jazyk="cs").order_by("varianta")
-            result.extend(["".join(["<li itemid='", subject.id_heslo.id_heslo ,"' class='clickable'>", bold(substring, subject.varianta), " (<i>", subject.id_heslo.heslo, "</i>)</li>"]) for subject in subjects])
-            
-            subjects = Hesla.objects.filter(heslo__contains = substring).order_by("heslo").exclude(heslo__istartswith=substring)
-            result.extend(["".join(["<li itemid='", subject.id_heslo ,"' class='clickable'>", bold(substring, subject.heslo), "</li>"]) for subject in subjects])
-            
-            subjects = Varianta.objects.filter(varianta__contains = substring, jazyk="cs").order_by("varianta").exclude(varianta__istartswith=substring)
-            result.extend(["".join(["<li itemid='", subject.id_heslo.id_heslo ,"' class='clickable'>", bold(substring, subject.varianta), " (<i>", subject.id_heslo.heslo, "</i>)</li>"]) for subject in subjects])
-            
-        else:
-            subjects = Ekvivalence.objects.filter(ekvivalent__istartswith = substring).order_by("ekvivalent")
-            result.extend(["".join(["<li itemid='", subject.id_heslo.id_heslo ,"' class='clickable'>", bold(substring, subject.ekvivalent), "</li>"]) for subject in subjects])
-            
-            subjects = Varianta.objects.filter(varianta__istartswith = substring, jazyk="en").order_by("varianta")
-            result.extend(["".join(["<li itemid='", subject.id_heslo.id_heslo ,"' class='clickable'>", bold(substring, subject.varianta), " (<i>", Ekvivalence.objects.get(id_heslo=subject.id_heslo.id_heslo).ekvivalent, "</i>)</li>"]) for subject in subjects])
-            
-            subjects = Ekvivalence.objects.filter(ekvivalent__contains = substring).order_by("ekvivalent").exclude(ekvivalent__istartswith=substring)
-            result.extend(["".join(["<li itemid='", subject.id_heslo.id_heslo ,"' class='clickable'>", bold(substring, subject.ekvivalent), "</li>"]) for subject in subjects])
-            
-            subjects = Varianta.objects.filter(varianta__contains = substring, jazyk="en").order_by("varianta").exclude(varianta__istartswith=substring)
-            result.extend(["".join(["<li itemid='", subject.id_heslo.id_heslo ,"' class='clickable'>", bold(substring, subject.varianta), " (<i>", Ekvivalence.objects.get(id_heslo=subject.id_heslo.id_heslo).ekvivalent, "</i>)</li>"]) for subject in subjects])
-            
-        result.append("</ul>")
+    subjects = Varianta.objects.filter(varianta__contains = term, jazyk=lang).order_by("varianta").exclude(varianta__istartswith=term)
+    subjects = [{"id_heslo": s.id_heslo, "varianta":bold(term, s.varianta), "heslo":bold(term,s.id_heslo.heslo)} for s in subjects]
+    nonpreferred.extend(subjects)
     
-        return HttpResponse("".join(result))
-    except Exception, e:
-        return HttpResponse(str(e))
+    # else:
+    #         subjects = Ekvivalence.objects.filter(ekvivalent__istartswith = term).order_by("ekvivalent")
+    #         result.extend(["".join(["<li itemid='", subject.id_heslo.id_heslo ,"' class='clickable'>", bold(term, subject.ekvivalent), "</li>"]) for subject in subjects])
+            
+    #         subjects = Varianta.objects.filter(varianta__istartswith = term, jazyk="en").order_by("varianta")
+    #         result.extend(["".join(["<li itemid='", subject.id_heslo.id_heslo ,"' class='clickable'>", bold(term, subject.varianta), " (<i>", Ekvivalence.objects.get(id_heslo=subject.id_heslo.id_heslo).ekvivalent, "</i>)</li>"]) for subject in subjects])
+            
+    #         subjects = Ekvivalence.objects.filter(ekvivalent__contains = term).order_by("ekvivalent").exclude(ekvivalent__istartswith=term)
+    #         result.extend(["".join(["<li itemid='", subject.id_heslo.id_heslo ,"' class='clickable'>", bold(term, subject.ekvivalent), "</li>"]) for subject in subjects])
+            
+    #         subjects = Varianta.objects.filter(varianta__contains = term, jazyk="en").order_by("varianta").exclude(varianta__istartswith=term)
+    #         result.extend(["".join(["<li itemid='", subject.id_heslo.id_heslo ,"' class='clickable'>", bold(term, subject.varianta), " (<i>", Ekvivalence.objects.get(id_heslo=subject.id_heslo.id_heslo).ekvivalent, "</i>)</li>"]) for subject in subjects])
+            
+    #     result.append("</ul>")
+    
+    return render_to_response("search_result.html", {"preferred": preferred, "nonpreferred":nonpreferred})
+    # except Exception, e:
+    #     return HttpResponse(str(e))
         
 
 def bold(substring, text):
@@ -281,19 +288,3 @@ def getWikipediaLink(request):
         return HttpResponse("True")
     except Exception, e:
         return HttpResponse(str(e))
-
-def saveWikipediaLink(request):
-    """Save wikipedia link"""
-    subjectID = request.POST["subjectID"]
-    try:
-        heslo = Hesla.objects.get(id_heslo=subjectID)
-        link = Vazbywikipedia(id_heslo=subjectID, heslo_wikipedia=heslo.heslo, uri_wikipedia="".join(["http://cs.wikipedia.org/wiki/", heslo.heslo]), typ_vazby="exactMatch")
-        link.save()
-        return HttpResponse("--- Wikipedia link saved ---")
-    except Exception, e:
-        return HttpResponse(str(e))
-
-def update(request):
-    """Update trigger"""
-    handler.update()
-    return render_to_response('update.html', {})
