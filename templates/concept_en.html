@@ -5,9 +5,9 @@
 <div id="search">
 <form action="/skos/search" method="get" id="search_form">
 <input type="text" id="psh_suggest" size="20" name="term"/>
-<input type="hidden" id="language" name="lang" value="cs"/>
+<input type="hidden" id="language" name="lang" value="en"/>
 </form>
-<div id="searchTitle">Vyhledávání</div>
+<div id="searchTitle">Search</div>
 </div>
 <a href="http://www.techlib.cz" target=blank><img id="logoNTK" src="/static/img/ntk_logo.png" title="Stránky NTK"/></a>
 <a href="http://www.techlib.cz/cs/14-psh" target=blank><img id="logoPSH" src="/static/img/psh_logo.png" title="Stránky PSH"/></a>
@@ -22,14 +22,14 @@
     <div id="scrollable">
         <div class="title">{{ concept.heslo }}</div>
 
-        <div class="sublabel">URI: <a href="http://psh.ntkcz.cz/skos/{{ concept.id_heslo }}">http://psh.ntkcz.cz/skos/{{ concept.id_heslo }}</a></div>
+        <div class="sublabel">URI: <a href="http://psh.ntkcz.cz/skos/{{ concept.id_heslo }}/en">http://psh.ntkcz.cz/skos/{{ concept.id_heslo }}/en</a></div>
 
-        <div class="sublabel">Anglické znění</div>
+        <div class="sublabel">Czech label</div>
         <ul id="ekvivalent">
             <li class="">{{ concept.ekvivalent }}</li>
         </ul>
         
-        <div class="sublabel">Nepreferovaná znění</div>
+        <div class="sublabel">Nonpreferred labels</div>
     	<ul id="nonprefered">
         {% if concept.nepreferovany %}
             {% for heslo in concept.nepreferovany %}
@@ -40,33 +40,33 @@
         {% endif %}
         </ul>
 
-        <div class="sublabel">Nadřazené heslo</div>
+        <div class="sublabel">Broader concept</div>
         <ul id="broader">
         {% if concept.nadrazeny %}
             {% for heslo in concept.nadrazeny %}
-                <li class="clickable"><a href="/skos/{{heslo.id_heslo}}">{{ heslo.heslo }}</a></li>
+                <li class="clickable"><a href="/skos/{{heslo.id_heslo}}/en">{{ heslo.heslo }}</a></li>
             {% endfor %}
         {% else %}
             <li>-</li>
         {% endif %}
         </ul>
         
-        <div class="sublabel">Příbuzná hesla</div>
+        <div class="sublabel">Related concepts</div>
     	<ul id="related">
         {% if concept.pribuzny %}
             {% for heslo in concept.pribuzny %}
-                <li class="clickable"><a href="/skos/{{heslo.id_heslo}}">{{ heslo.heslo }}</a></li>
+                <li class="clickable"><a href="/skos/{{heslo.id_heslo}}/en">{{ heslo.heslo }}</a></li>
             {% endfor %}
         {% else %}
             <li>-</li>
         {% endif %}
         </ul>
         
-        <div class="sublabel">Podřazená hesla</div>
+        <div class="sublabel">Narrower concepts</div>
     	<ul id="narrower">
         {% if concept.podrazeny %}
             {% for heslo in concept.podrazeny %}
-                <li class="clickable"><a href="/skos/{{heslo.id_heslo}}">{{ heslo.heslo }}</a></li>
+                <li class="clickable"><a href="/skos/{{heslo.id_heslo}}/en">{{ heslo.heslo }}</a></li>
             {% endfor %}
         {% else %}
             <li>-</li>

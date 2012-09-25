@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div id="scrollDiv">
+    <div id="scrollable">
+    <div id="gradient-top"></div>
+        <div class="title">Hlavní hesla</div>
+    	<ul id="top_concepts">
+        {% for heslo in hesla %}
+            <li class="clickable"><a href="{{heslo.id_heslo.id_heslo}}/en">{{ heslo.ekvivalent }}</a></li>
+        {% endfor %}
+        </ul>
+    </div>
+</div>
+<div id="concept">{% autoescape off %}{{ concept }}{% endautoescape %}</div>
+{% endblock %}

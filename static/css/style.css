@@ -21,29 +21,6 @@ display: block;
 font-family: Univers55, times, sans-serif;
 }
 
-#gradient-top, #gradient-bottom{
-position: fixed;
-width: 350px;
-height: 20px;
-}
-
-#gradient-top{
-background-image: -webkit-gradient(
-linear, left top, left bottom, from(rgba(255,255,255,1)),
-to(rgba(255,255,255,0.1)), color-stop(.5,#FFFFFF)
-);
-
-background-image: -moz-linear-gradient(
-rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.1) 95%
-);
-}
-
-#gradient-bottom{
-background-image: -webkit-gradient(
-linear, left top, left bottom, from(rgba(255,255,255,0.1)),
-to(rgba(255,255,255,1)), color-stop(.5,#FFFFFF)
-);
-}
 
 #nav{
 height: 50px;
@@ -53,24 +30,6 @@ background-color: white;
 padding-bottom: 15px;
 width: 95%;
 border-bottom: solid gray 1px;
-}
-
-#cacheList{
-padding: 0;
-padding-left: 40px;
-margin-top: 10px;
-list-style-type: square;
-float: left;
-font-style: italic;
-font-size: 8px;
-}
-
-#cacheList li{
-font-size: small;
-margin: 0;
-padding: 0;
-color: gray;
-
 }
 
 #content{
@@ -101,7 +60,7 @@ background: url('../img/big_sprite.png') no-repeat -7px -92px;
 padding-left: 30px;
 }
 
-#scrollDiv{
+#scroll_div{
 overflow-x: hidden;
 font-weight: normal;
 margin-right: 40px;
@@ -147,6 +106,14 @@ opacity: 0.2;
 margin-left: 10px;
 margin-right: 20px;
 float: left;
+}
+
+#english.english{
+  opacity: 0.9;
+}
+
+#english.czech{
+  opacity: 0.2;
 }
 
 #english:hover{

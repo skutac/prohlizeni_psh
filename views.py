@@ -37,6 +37,16 @@ def index(request):
        hesla.append(Hesla.objects.get(id_heslo=heslo.id_heslo))
    hesla.sort(key=lambda x: x.heslo)
    return render_to_response("index.html", {"hesla":hesla})
+
+def index_en(request):
+   """Returns main site"""
+   hesla = []
+   topconcepts = Topconcepts.objects.all()
+   for heslo in topconcepts:
+       hesla.append(Ekvivalence.objects.get(id_heslo=heslo.id_heslo))
+   hesla.sort(key=lambda x: x.ekvivalent)
+   print hesla
+   return render_to_response("index_en.html", {"hesla":hesla})
             
 #def getSubjectByHash(request, subjectID):
     #"""Return HTML representation of subject according to given PSH ID"""
@@ -106,31 +116,32 @@ def search(request):
         subjects = [{"id_heslo": s.id_heslo, "heslo":bold(term,s.heslo)} for s in subjects]
         preferred.extend(subjects)
 
-    else:
-        pass
+        subjects = Varianta.objects.filter(varianta__istartswith = term, jazyk=lang).order_by("varianta")
+        subjects = [{"id_heslo": s.id_heslo.id_heslo, "varianta":bold(term, s.varianta), "heslo":bold(term, s.id_heslo.heslo)} for s in subjects]
+        nonpreferred.extend(subjects)
+                
+        subjects = Varianta.objects.filter(varianta__contains = term, jazyk=lang).order_by("varianta").exclude(varianta__istartswith=term)
+        subjects = [{"id_heslo": s.id_heslo.id_heslo, "varianta":bold(term, s.varianta), "heslo":bold(term,s.id_heslo.heslo)} for s in subjects]
+        nonpreferred.extend(subjects)
 
-    subjects = Varianta.objects.filter(varianta__istartswith = term, jazyk=lang).order_by("varianta")
-    subjects = [{"id_heslo": s.id_heslo, "varianta":bold(term, s.varianta), "heslo":bold(term, s.id_heslo.heslo)} for s in subjects]
-    nonpreferred.extend(subjects)
-            
-    subjects = Varianta.objects.filter(varianta__contains = term, jazyk=lang).order_by("varianta").exclude(varianta__istartswith=term)
-    subjects = [{"id_heslo": s.id_heslo, "varianta":bold(term, s.varianta), "heslo":bold(term,s.id_heslo.heslo)} for s in subjects]
-    nonpreferred.extend(subjects)
-    
-    # else:
-    #         subjects = Ekvivalence.objects.filter(ekvivalent__istartswith = term).order_by("ekvivalent")
-    #         result.extend(["".join(["<li itemid='", subject.id_heslo.id_heslo ,"' class='clickable'>", bold(term, subject.ekvivalent), "</li>"]) for subject in subjects])
-            
-    #         subjects = Varianta.objects.filter(varianta__istartswith = term, jazyk="en").order_by("varianta")
-    #         result.extend(["".join(["<li itemid='", subject.id_heslo.id_heslo ,"' class='clickable'>", bold(term, subject.varianta), " (<i>", Ekvivalence.objects.get(id_heslo=subject.id_heslo.id_heslo).ekvivalent, "</i>)</li>"]) for subject in subjects])
-            
-    #         subjects = Ekvivalence.objects.filter(ekvivalent__contains = term).order_by("ekvivalent").exclude(ekvivalent__istartswith=term)
-    #         result.extend(["".join(["<li itemid='", subject.id_heslo.id_heslo ,"' class='clickable'>", bold(term, subject.ekvivalent), "</li>"]) for subject in subjects])
-            
-    #         subjects = Varianta.objects.filter(varianta__contains = term, jazyk="en").order_by("varianta").exclude(varianta__istartswith=term)
-    #         result.extend(["".join(["<li itemid='", subject.id_heslo.id_heslo ,"' class='clickable'>", bold(term, subject.varianta), " (<i>", Ekvivalence.objects.get(id_heslo=subject.id_heslo.id_heslo).ekvivalent, "</i>)</li>"]) for subject in subjects])
-            
-    #     result.append("</ul>")
+    else:
+
+        subjects = Ekvivalence.objects.filter(ekvivalent__istartswith = term).order_by("ekvivalent")
+        subjects = [{"id_heslo": s.id_heslo.id_heslo, "heslo":bold(term,s.ekvivalent)} for s in subjects]
+        preferred.extend(subjects)
+
+        subjects = Ekvivalence.objects.filter(ekvivalent__contains = term).order_by("ekvivalent").exclude(ekvivalent__istartswith=term)
+        subjects = [{"id_heslo": s.id_heslo.id_heslo, "heslo":bold(term,s.ekvivalent)} for s in subjects]
+        preferred.extend(subjects)
+
+        subjects = Varianta.objects.filter(varianta__istartswith = term, jazyk=lang).order_by("varianta")
+        subjects = [{"id_heslo": s.id_heslo.id_heslo, "varianta":bold(term, s.varianta), "heslo":bold(term, Ekvivalence.objects.get(id_heslo=s.id_heslo).ekvivalent )} for s in subjects]
+        nonpreferred.extend(subjects)
+                
+        subjects = Varianta.objects.filter(varianta__contains = term, jazyk=lang).order_by("varianta").exclude(varianta__istartswith=term)
+        subjects = [{"id_heslo": s.id_heslo.id_heslo, "varianta":bold(term, s.varianta), "heslo":bold(term, Ekvivalence.objects.get(id_heslo=s.id_heslo).ekvivalent )} for s in subjects]
+        nonpreferred.extend(subjects)
+        
     
     return render_to_response("search_result.html", {"preferred": preferred, "nonpreferred":nonpreferred})
     # except Exception, e:
@@ -165,6 +176,10 @@ def get_subject_id(request):
 def get_concept(request, subject_id):
     """Interface for subject retrieval"""
     return render_to_response("concept.html", {"concept": get_concept_dict(subject_id, "cs")})
+
+def get_concept_en(request, subject_id):
+    """Interface for subject retrieval"""
+    return render_to_response("concept_en.html", {"concept": get_concept_dict(subject_id, "en")})
 
 def get_concept_dict(subject_id, lang):
 

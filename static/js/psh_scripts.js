@@ -5,26 +5,43 @@ $(document).ready(function(){
     $('#scrollDiv, #scrollable').css('height', (screenheight-200));
 
       $("#search").delegate('#psh_suggest', 'keyup', function(event){
-        var textInput = $(this).val();
-        if(textInput.length > 1){
-        var lang = $('#english').attr('data-lang');
-        var keycode = (event.keyCode ? event.keyCode : event.which);
-        if(keycode == '13'){
-            var subject = $(this).val();
-            $("#search_form").submit();
-        }
-        $.ajax({type : "GET",
-               url : "/suggest",
-               datatype: "json",
-               success: function(subjects){
-                      $("#psh_suggest").autocomplete({source: subjects});},
-               data : {'input': textInput, 'lang': lang}
-        });
+        var text_input = $(this).val();
+        if(text_input.length > 1){
+            var lang = $('#language').val();
+            var keycode = (event.keyCode ? event.keyCode : event.which);
+
+            if(keycode == '13'){
+                var subject = $(this).val();
+                $("#search_form").submit();
+            }
+
+            $.ajax({type : "GET",
+                   url : "/suggest",
+                   datatype: "json",
+                   success: function(subjects){
+                          $("#psh_suggest").autocomplete({source: subjects});},
+                   data : {'input': text_input, 'lang': lang}
+            });
     }
     else{
         $("#suggestedSubjects").html("");
     }
     });
+
+    // $('#english').click(function(){
+    //     var lang = $('#language').val();
+
+    //     if(lang == "cs"){
+    //         $(this).css('opacity', '0.9');
+    //         $('#search_language').text('angličitna');
+    //         $('#language').val('en');
+    //     }
+    //     else{
+    //         $(this).css('opacity', '0.2');
+    //         $('#search_language').text('čeština');
+    //         $('#language').val('cs');
+    //     }
+    // });
 });
 
 function getSuggestedSubject(subject){
@@ -55,19 +72,6 @@ $('.ui-menu-item a').live('click', function(){
     getSuggestedSubject(subject);
 });
 
-$('#english').live('click', function(){
-    var lang = $(this).attr('data-lang');
-    if(lang == "cs"){
-        $(this).css('opacity', '0.9');
-        $(this).attr('data-lang', 'en');
-        $('#searchLanguage').text('angličitna');
-    }
-    else{
-        $(this).css('opacity', '0.2');
-        $(this).attr('data-lang', 'cs');
-        $('#searchLanguage').text('čeština');
-    }
-});
 
 // function getSearchResult(subject, english){
 //     $.ajax({type : 'POST',
