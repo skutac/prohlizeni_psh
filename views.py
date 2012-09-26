@@ -45,7 +45,6 @@ def index_en(request):
    for heslo in topconcepts:
        hesla.append(Ekvivalence.objects.get(id_heslo=heslo.id_heslo))
    hesla.sort(key=lambda x: x.ekvivalent)
-   print hesla
    return render_to_response("index_en.html", {"hesla":hesla})
             
 #def getSubjectByHash(request, subjectID):
@@ -60,7 +59,6 @@ def index_en(request):
     
 def suggest(request):
     """Return suggested labels according to given text input and language selector"""
-    print "suggest"
     text_input = request.GET["input"]
     if request.GET["lang"] == "cs":
         hesla = Hesla.objects.filter(heslo__istartswith=text_input)
