@@ -36,7 +36,8 @@ def index(request):
    for heslo in topconcepts:
        hesla.append(Hesla.objects.get(id_heslo=heslo.id_heslo))
    hesla.sort(key=lambda x: x.heslo)
-   return render_to_response("index.html", {"hesla":hesla})
+   nav = {"lang":"cs" ,"search_label": "Vyhledávání", "english":"inactive", "czech":"active"}
+   return render_to_response("index.html", {"hesla":hesla, "nav": nav})
 
 def index_en(request):
    """Returns main site"""
@@ -45,7 +46,8 @@ def index_en(request):
    for heslo in topconcepts:
        hesla.append(Ekvivalence.objects.get(id_heslo=heslo.id_heslo))
    hesla.sort(key=lambda x: x.ekvivalent)
-   return render_to_response("index_en.html", {"hesla":hesla})
+   nav = {"lang":"en" ,"search_label": "Search", "english":"active", "czech":"inactive"}
+   return render_to_response("index_en.html", {"hesla":hesla, "nav":nav})
             
 #def getSubjectByHash(request, subjectID):
     #"""Return HTML representation of subject according to given PSH ID"""
@@ -105,6 +107,13 @@ def search(request):
     preferred = []
     nonpreferred = []
 
+    exact_match = get_exact_match(term,lang)
+    if exact_match:
+        if lang == "cs":
+            return get_concept("", exact_match)
+        else:
+            return get_concept_en("", exact_match)
+
     if lang == "cs":
         subjects = Hesla.objects.filter(heslo__istartswith = term).order_by("heslo")
         subjects = [{"id_heslo": s.id_heslo, "heslo":bold(term,s.heslo)} for s in subjects]
@@ -121,6 +130,8 @@ def search(request):
         subjects = Varianta.objects.filter(varianta__contains = term, jazyk=lang).order_by("varianta").exclude(varianta__istartswith=term)
         subjects = [{"id_heslo": s.id_heslo.id_heslo, "varianta":bold(term, s.varianta), "heslo":bold(term,s.id_heslo.heslo)} for s in subjects]
         nonpreferred.extend(subjects)
+        nav = {"lang":"cs" ,"search_label": "Vyhledávání", "english":"inactive", "czech":"active"}
+        return render_to_response("search_result.html", {"preferred": preferred, "nonpreferred":nonpreferred, "nav":nav})
 
     else:
 
@@ -139,9 +150,9 @@ def search(request):
         subjects = Varianta.objects.filter(varianta__contains = term, jazyk=lang).order_by("varianta").exclude(varianta__istartswith=term)
         subjects = [{"id_heslo": s.id_heslo.id_heslo, "varianta":bold(term, s.varianta), "heslo":bold(term, Ekvivalence.objects.get(id_heslo=s.id_heslo).ekvivalent )} for s in subjects]
         nonpreferred.extend(subjects)
+        nav = {"lang":"en" ,"search_label": "Search", "english":"active", "czech":"inactive"}
+        return render_to_response("search_result_en.html", {"preferred": preferred, "nonpreferred":nonpreferred, "nav":nav})
         
-    
-    return render_to_response("search_result.html", {"preferred": preferred, "nonpreferred":nonpreferred})
     # except Exception, e:
     #     return HttpResponse(str(e))
         
@@ -150,34 +161,15 @@ def bold(substring, text):
     """Boldify substring within a given text"""
     return re.sub(substring, "".join(["<b>", substring, "</b>"]), text)
 
-def get_subject_id(request):
-    """Get PSH ID for given text label (translate alternative label to preferred label)"""
-    if request.GET["lang"] == 'cs':
-        try:
-            id = Hesla.objects.get(heslo=request.GET["input"]).id_heslo
-        except:
-            try:
-                id = Varianta.objects.get(varianta=request.GET["input"], jazyk="cs").id_heslo.id_heslo
-                
-            except:
-                id = "None"
-    else:
-        try:
-            id = Ekvivalence.objects.get(ekvivalent=request.GET["input"]).id_heslo.id_heslo
-        except:
-            try:
-                id = Varianta.objects.get(varianta=request.GET["input"], jazyk="en").id_heslo.id_heslo
-            except:
-                id = "None"
-    return HttpResponse(id)
-
 def get_concept(request, subject_id):
     """Interface for subject retrieval"""
-    return render_to_response("concept.html", {"concept": get_concept_dict(subject_id, "cs")})
+    nav = {"lang":"cs" ,"search_label": "Vyhledávání", "english":"inactive", "czech":"active"}
+    return render_to_response("concept.html", {"concept": get_concept_dict(subject_id, "cs"), "nav": nav})
 
 def get_concept_en(request, subject_id):
     """Interface for subject retrieval"""
-    return render_to_response("concept_en.html", {"concept": get_concept_dict(subject_id, "en")})
+    nav = {"lang":"en" ,"search_label": "Search", "english":"active", "czech":"inactive"}
+    return render_to_response("concept_en.html", {"concept": get_concept_dict(subject_id, "en"), "nav": nav})
 
 def get_concept_dict(subject_id, lang):
 
@@ -271,6 +263,19 @@ def get_concept_dict(subject_id, lang):
         heslo = ""
     return heslo
 
+def get_exact_match(term, lang):
+    if lang == "cs":
+        hesla = [h.id_heslo for h in Hesla.objects.filter(heslo__contains=term)]
+    else:
+        hesla = [h.id_heslo.id_heslo for h in Ekvivalence.objects.filter(ekvivalent__contains=term)]
+    
+    hesla.extend([h.id_heslo.id_heslo for h in Varianta.objects.filter(varianta__contains=term, jazyk=lang)])
+
+    if len(hesla) == 1:
+        return hesla[0]
+    else:
+        return False
+
 
 def get_concept_as_json(request, subject_id=None, lang="cs", callback=None):
         """Get concept form database according to its PSH ID"""
@@ -293,11 +298,11 @@ def get_concept_as_json(request, subject_id=None, lang="cs", callback=None):
         else:
             return HttpResponse(json.dumps(heslo), mimetype='application/json')
 
-def getWikipediaLink(request):
-    """Check for wikipedia link"""
-    subjectID = request.POST["subjectID"]
-    try:
-        link = Vazbywikipedia.objects.get(id_heslo=subjectID)
-        return HttpResponse("True")
-    except Exception, e:
-        return HttpResponse(str(e))
+# def getWikipediaLink(request):
+#     """Check for wikipedia link"""
+#     subjectID = request.POST["subjectID"]
+#     try:
+#         link = Vazbywikipedia.objects.get(id_heslo=subjectID)
+#         return HttpResponse("True")
+#     except Exception, e:
+#         return HttpResponse(str(e))

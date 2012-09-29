@@ -5,6 +5,7 @@ PSH.Visualization = function (id_container, params) {
   this.$container = $("#" + id_container);
   this.id_concept = (params && params.id_concept) ? params.id_concept : false;
   this.lang = (params && params.lang) ? params.lang : false; // "cs" nebo "en"
+  console.log(this.id_concept, this.lang);
   this.canvas = false;
   this.canvaswidth = false; // cachování často užívaných DOM vlastností
   this.canvasheight = false;
@@ -211,6 +212,7 @@ PSH.Visualization.prototype = {
 
     // Kruh okolo hesla
     this.drawCircle(conceptWidth, x0, y0);
+    
   },
   load : function (callback, params) {
     $.ajax({
@@ -220,7 +222,7 @@ PSH.Visualization.prototype = {
       },
       dataType : "jsonp",
       jsonpCallback : callback,
-      url : (params && params.url) ? params.url : "http://data.ntkcz.cz/prohlizeni_psh/getjson"
+      url : (params && params.url) ? params.url : "/getjson"
     });
   }
 };

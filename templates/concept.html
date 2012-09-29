@@ -1,23 +1,6 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div id="nav">
-<div id="search">
-<form action="/skos/search" method="get" id="search_form">
-<input type="text" id="psh_suggest" size="20" name="term"/>
-<input type="hidden" id="language" name="lang" value="cs"/>
-</form>
-<div id="search_title">Vyhledávání</div>
-</div>
-<a href="http://www.techlib.cz" target=blank><img id="logoNTK" src="/static/img/ntk_logo.png" title="Stránky NTK"/></a>
-<a href="http://www.techlib.cz/cs/14-psh" target=blank><img id="logoPSH" src="/static/img/psh_logo.png" title="Stránky PSH"/></a>
-
-<!-- <a href="http://cs.wikipedia.org/wiki/Antropologie" target=blank><img id="logoWikipedia" src="/static/img/wikipedia-logo.png" title="Odkaz na Wikipedii"/></a> -->
-
-<a href="/skos/{{ concept.id_heslo }}"><img id="czech" class="active" src="/static/img/czech_flag.png" /></a>
-<a href="/skos/{{ concept.id_heslo }}/en"><img id="english" class="inactive" src="/static/img/english_flag.png" /></a>
-
-</div>
 <div id="scroll_div">
     <div id="scrollable">
         <div class="title">{{ concept.heslo }}</div>
@@ -68,8 +51,7 @@
     var vis = new PSH.Visualization("visualization",
         {"id_concept": "{{ concept.id_heslo }}", "lang": "en"}// Volitelně objekt s atributy "id_concept" nebo "lang". Pokud není poskytnut, defaultně se tyto údaje vezmou z URI.
     );
-    vis.load(
-        "vis.display", // Název callbackové funkce, který musí být ve tvaru "{název proměnné instance}.display"
+    "vis.display", // Název callbackové funkce, který musí být ve tvaru "{název proměnné instance}.display"
         {} // Volitelně objekt s atributy "data" (objekt obsahující GET parametry) nebo "url". 
          // Pokud není poskytnut, pak se defaultně vezme nastavení pro službu http://data.ntkcz.cz/prohlizeni_psh/getjson
 );

@@ -1,25 +1,6 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div id="nav">
-<div id="search">
-<form action="/skos/search" method="get" id="search_form">
-<input type="text" id="psh_suggest" size="20" name="term"/>
-<input type="hidden" id="language" name="lang" value="en"/>
-</form>
-<div id="search_title">Search</div>
-</div>
-<a href="http://www.techlib.cz" target=blank><img id="logoNTK" src="/static/img/ntk_logo.png" title="Stránky NTK"/></a>
-<a href="http://www.techlib.cz/cs/14-psh" target=blank><img id="logoPSH" src="/static/img/psh_logo.png" title="Stránky PSH"/></a>
-
-<!-- <div id="logoWikipedia">Prohlížení</div> -->
-
-<!-- <a href="http://cs.wikipedia.org/wiki/Antropologie" target=blank><img id="logoWikipedia" src="/static/img/wikipedia-logo.png" title="Odkaz na Wikipedii"/></a> -->
-
-<a href="/skos/"><img id="czech" class="inactive" src="/static/img/czech_flag.png" /></a>
-<a href="/skos/en"><img id="english" class="active" src="/static/img/english_flag.png" /></a>
-
-</div>
 <div id="scrollDiv">
     <div id="scrollable">
     <div id="gradient-top"></div>

@@ -19,6 +19,30 @@
 </script>
 
 <body>
+<div id="nav">
+<div id="search">
+<form action="/skos/search" method="get" id="search_form">
+<input type="text" id="psh_suggest" size="20" name="term"/>
+<input type="hidden" id="language" name="lang" value="{{ nav.lang }}"/>
+</form>
+<div id="search_title">{{ nav.search_label }}</div>
+</div>
+<a href="http://www.techlib.cz" target=blank><img id="logoNTK" src="/static/img/ntk_logo.png" title="Stránky NTK"/></a>
+<a href="http://www.techlib.cz/cs/14-psh" target=blank><img id="logoPSH" src="/static/img/psh_logo.png" title="Stránky PSH"/></a>
+
+<!-- <div id="logoWikipedia">Prohlížení</div> -->
+
+<!-- <a href="http://cs.wikipedia.org/wiki/Antropologie" target=blank><img id="logoWikipedia" src="/static/img/wikipedia-logo.png" title="Odkaz na Wikipedii"/></a> -->
+
+{% if concept.id_heslo %}
+<a href="/skos/{{ concept.id_heslo }}"><img id="czech" class="{{ nav.czech }}" src="/static/img/czech_flag.png" /></a>
+<a href="/skos/{{ concept.id_heslo }}/en"><img id="english" class="{{ nav.english }}" src="/static/img/english_flag.png" /></a>
+{% else %}
+<a href="/skos/"><img id="czech" class="{{ nav.czech }}" src="/static/img/czech_flag.png" /></a>
+<a href="/skos/en"><img id="english" class="{{ nav.english }}" src="/static/img/english_flag.png" /></a>
+{% endif %}
+</div>
+
 <div id="content">
 {% block content %}{% endblock %}
 </div>

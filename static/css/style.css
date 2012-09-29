@@ -66,11 +66,11 @@ margin-top: 15px;
   background:url(/static/img/big_sprite.png) no-repeat -7px -92px;
 }
 
-#narrower a{
+#narrower a, .search_result a{
   background:url(/static/img/big_sprite.png) no-repeat -7px -6px;
 }
 
-#narrower a:hover{
+#narrower a:hover, .search_result a:hover{
   background:url(/static/img/big_sprite.png) no-repeat -7px -32px;
 }
 
@@ -81,7 +81,7 @@ margin-top: 15px;
   background:url(/static/img/big_sprite.png) no-repeat -7px -148px;
 }
 
-#scrollable ul a, #nonpreferred li{
+#scrollable ul a, #nonpreferred li, .search_result a{
   padding-left: 25px;
   color: black;
   text-decoration: none;
@@ -121,6 +121,17 @@ padding-top: 15px;
 float:right;
 margin-right: 20px;
 padding-top: 10px;
+}
+
+#search_result_table{
+  width: 80%;
+  margin-right: auto;
+  margin-left: auto;
+  text-align: left;
+}
+
+#search_result_table td{
+  vertical-align: top;
 }
 
 /*#katalog, #new_subject, #marc_format{
