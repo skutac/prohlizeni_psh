@@ -2,6 +2,7 @@
 import simplejson as json
 import re
 from itertools import *
+import urllib2
 
 # from psh_manager_online import handler
 # from psh_manager_online.psh.models import Hesla, Varianta, Ekvivalence, Hierarchie, Topconcepts, Pribuznost, Zkratka, Vazbywikipedia, SysNumber
@@ -48,16 +49,6 @@ def index_en(request):
    hesla.sort(key=lambda x: x.ekvivalent)
    nav = {"lang":"en" ,"search_label": "Search", "english":"active", "czech":"inactive"}
    return render_to_response("index_en.html", {"hesla":hesla, "nav":nav})
-            
-#def getSubjectByHash(request, subjectID):
-    #"""Return HTML representation of subject according to given PSH ID"""
-    #try:
-        #subject = open("".join([settings.ROOT, "/static/subjects/", subjectID, ".html"]), "r")
-        #concept = subject.read()
-        #subject.close()
-        #return render_to_response("index.html", {'concept': concept})
-    #except:
-        #return render_to_response("index.html", {'concept': getConceptFromDB(subjectID)})
     
 def suggest(request):
     """Return suggested labels according to given text input and language selector"""
@@ -298,11 +289,12 @@ def get_concept_as_json(request, subject_id=None, lang="cs", callback=None):
         else:
             return HttpResponse(json.dumps(heslo), mimetype='application/json')
 
-# def getWikipediaLink(request):
-#     """Check for wikipedia link"""
-#     subjectID = request.POST["subjectID"]
-#     try:
-#         link = Vazbywikipedia.objects.get(id_heslo=subjectID)
-#         return HttpResponse("True")
-#     except Exception, e:
-#         return HttpResponse(str(e))
+def get_library_records(request):
+    subject = request.GET["subject"]
+    url = "https://vufind.techlib.cz/vufind/Search/Results?lookfor=%s&type=psh_facet&submit=Hledat"%subject
+    records = urllib2.urlopen(url)
+    # 'record\d+>(.*?)class="result'
+    for record in re.findall('record\d+">(.*?)class="result ', records.read(), re.S):
+        print record
+
+    return HttpResponse(url)

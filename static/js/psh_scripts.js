@@ -4,6 +4,8 @@ var screenheight = screen.height;
 $(document).ready(function(){
     $('#scrollDiv, #scrollable').css('height', (screenheight-200));
 
+    get_library_records_for_subject();
+
       $("#search").delegate('#psh_suggest', 'keyup', function(event){
         var text_input = $(this).val();
         if(text_input.length > 1){
@@ -71,6 +73,20 @@ $('.ui-menu-item a').live('click', function(){
     var subject = $(this).text();
     getSuggestedSubject(subject);
 });
+
+function get_library_records_for_subject(){
+    var subject = $(".title").text();
+    $.ajax({
+      url: '/get_library_records',
+      type: 'GET',
+      data: {subject: subject},
+      success: function(records) {
+        console.log(records);
+      },
+      
+    });
+    
+}
 
 
 // function getSearchResult(subject, english){

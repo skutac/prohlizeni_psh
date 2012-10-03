@@ -48,15 +48,18 @@
     </div>
 </div>
 <script>
-    var vis = new PSH.Visualization("visualization",
-        {"id_concept": "{{ concept.id_heslo }}", "lang": "en"}// Volitelně objekt s atributy "id_concept" nebo "lang". Pokud není poskytnut, defaultně se tyto údaje vezmou z URI.
-    );
-    vis.load(
-        "vis.display", // Název callbackové funkce, který musí být ve tvaru "{název proměnné instance}.display"
-        {} // Volitelně objekt s atributy "data" (objekt obsahující GET parametry) nebo "url". 
-         // Pokud není poskytnut, pak se defaultně vezme nastavení pro službu http://data.ntkcz.cz/prohlizeni_psh/getjson
-);
+//     var vis = new PSH.Visualization("visualization",
+//         {"id_concept": "{{ concept.id_heslo }}", "lang": "en"}// Volitelně objekt s atributy "id_concept" nebo "lang". Pokud není poskytnut, defaultně se tyto údaje vezmou z URI.
+//     );
+//     vis.load(
+//         "vis.display", // Název callbackové funkce, který musí být ve tvaru "{název proměnné instance}.display"
+//         {} // Volitelně objekt s atributy "data" (objekt obsahující GET parametry) nebo "url". 
+//          // Pokud není poskytnut, pak se defaultně vezme nastavení pro službu http://data.ntkcz.cz/prohlizeni_psh/getjson
+// );
 </script>
 <!-- <div id="visualization">{% autoescape off %}{{ concept }}{% endautoescape %}</div> -->
-<div id="visualization"></div>
+<div id="concept" data-subject_id="{{ concept.id_heslo }}">
+    <div id="visualization">
+    </div>
+</div>
 {% endblock %}

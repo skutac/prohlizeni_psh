@@ -26,4 +26,5 @@ urlpatterns = patterns('',
     # (r'^get_subject_id$', 'views.get_subject_id'),
     (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': os.path.join(settings.ROOT, 'static').replace('\\','/')}),
     (r'^suggest$', 'views.suggest'),
+    (r'^get_library_records$', 'views.get_library_records'),
 )
