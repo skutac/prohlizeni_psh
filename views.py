@@ -2,7 +2,7 @@
 import simplejson as json
 import re
 from itertools import *
-import urllib2
+import urllib2, urllib
 
 # from psh_manager_online import handler
 # from psh_manager_online.psh.models import Hesla, Varianta, Ekvivalence, Hierarchie, Topconcepts, Pribuznost, Zkratka, Vazbywikipedia, SysNumber
@@ -291,10 +291,42 @@ def get_concept_as_json(request, subject_id=None, lang="cs", callback=None):
 
 def get_library_records(request):
     subject = request.GET["subject"]
-    url = "https://vufind.techlib.cz/vufind/Search/Results?lookfor=%s&type=psh_facet&submit=Hledat"%subject
-    records = urllib2.urlopen(url)
-    # 'record\d+>(.*?)class="result'
-    for record in re.findall('record\d+">(.*?)class="result ', records.read(), re.S):
-        print record
+    url = 'https://vufind.techlib.cz/vufind/Search/Results?lookfor="%s"&type=psh_facet&submit=Hledat'%subject
+    url = url.encode("utf8")
+    records = []
+    try:
+        catalogue = urllib2.urlopen(url)
+        catalogue_html = catalogue.read()
+    except Exception, e:
+        return HttpResponse("None")
 
-    return HttpResponse(url)
+    record_count = re.search('class="yui-u first">(.*?)</div>', catalogue_html, re.S).group(1)
+    record_count = [r for r in re.findall("<b>(.*?)</b>", record_count, re.S)][2].strip(" \n")
+
+    catalogue_records = re.findall('record\d+">(.*?)class="result ', catalogue_html, re.S)
+
+    for record in catalogue_records:
+        title = re.search('class="title">(.*?)</a', record, re.S).group(1).strip("/ ")
+        link = re.search('resultItemLine1">.*?<a href="(.*?)"', record, re.S).group(1)
+        author_match = re.search('resultItemLine2">.*?<a href="(.*?)">(.*?)<', record, re.S)
+        
+        if not "saveLink" in author_match.group(0):
+            author_link = author_match.group(1)
+            author = author_match.group(2).strip(" \n").split(",")
+            if "1" in author[-1]:
+                author = author[:-1]
+            author = ", ".join(author)
+        else:
+            author_link = ""
+            author = ""
+        published = re.search("Vydáno:</strong>(.*?)<", record, re.S).group(1).strip(" \n")
+        records.append({"title":title, "link": link, "author":author, "author_link":author_link, "published":published})
+
+    records_html = ["<div id='catalogue_header'>Záznamy 1 - ", str(len(records))," z celkem ", record_count,", <a href='", url,"'>Přejít do katalogu NTK >></a></div>"]
+    records_html.append("<ul id='catalogue_records'>\n")
+    for r in records:
+        records_html.append("".join(['<li><a class="record_title" href="', r["link"],'">', r["title"],' (', r["published"],')</a>, <a class="author" href="', r["author_link"],'">', r["author"],'</a></li>\n']))
+
+    records_html.append("</ul>\n")
+
+    return HttpResponse("".join(records_html))

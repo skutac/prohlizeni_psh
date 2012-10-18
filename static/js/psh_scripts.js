@@ -75,13 +75,15 @@ $('.ui-menu-item a').live('click', function(){
 });
 
 function get_library_records_for_subject(){
-    var subject = $(".title").text();
+    var subject = $("#heslo").text();
     $.ajax({
       url: '/get_library_records',
       type: 'GET',
       data: {subject: subject},
-      success: function(records) {
-        console.log(records);
+      success: function(records){
+        $("#catalogue").append(records);
+        $("#catalogue_records").hide();
+        $("#catalogue_records").fadeIn();
       },
       
     });

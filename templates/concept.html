@@ -3,7 +3,7 @@
 {% block content %}
 <div id="scroll_div">
     <div id="scrollable">
-        <div class="title">{{ concept.heslo }}</div>
+        <div class="title" id="heslo">{{ concept.heslo }}</div>
 
         <div class="sublabel">URI: <a id="uri" href="http://psh.ntkcz.cz/skos/{{ concept.id_heslo }}">http://psh.ntkcz.cz/skos/{{ concept.id_heslo }}</a></div>
 
@@ -13,7 +13,7 @@
         <div class="sublabel">Nepreferovaná znění</div>
     	<ul id="nonprefered">
             {% for heslo in concept.nepreferovany %}
-                <li class="">{{ heslo }}</li>
+                <li>{{ heslo }}</li>
             {% endfor %}
         </ul>
         {% endif %}
@@ -45,6 +45,7 @@
             {% endfor %}
         </ul>
         {% endif %}
+        <div id="hidden"></div>
     </div>
 </div>
 <script>
@@ -60,5 +61,11 @@
 <div id="concept" data-subject_id="{{ concept.id_heslo }}">
     <div id="visualization">
     </div>
+
+    <div id="catalogue">
+        <div class="title">Katalog Národní technické knihovny</div>
+    </div>
 </div>
+
+
 {% endblock %}

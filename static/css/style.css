@@ -21,6 +21,10 @@ display: block;
 font-family: Univers55, times, sans-serif;
 }
 
+#hidden{
+  height: 100px;
+}
+
 
 #nav{
 height: 50px;
@@ -40,6 +44,45 @@ margin-top: 90px;
 width: 60%;
 margin-left: 33%;
 margin-top: 15px;
+}
+
+#catalogue{
+width: 60%;
+margin-left: 30%;
+margin-top: 15px;
+}
+
+#catalogue_header{
+  font-size: 14px;
+  text-decoration: none;
+  color: grey;
+  margin-left: 30px;
+  margin-top: 15px;
+}
+
+#catalogue_header a{
+  font-style: italic;
+  color: black;
+  font-weight: bolder;
+}
+
+#catalogue_records li:hover, #catalogue_header a:hover{
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+#catalogue_records{
+  list-style-type: square;
+  margin-left: 10px;
+}
+
+#catalogue_records a{
+  color: black;
+  font-size: 14px; 
+}
+
+.author{
+  font-style: italic;
 }
 
 #equivalent{
@@ -80,12 +123,13 @@ margin-top: 15px;
   background:url(/static/img/big_sprite.png) no-repeat -7px -148px;
 }
 
-#scrollable ul a, #nonpreferred li, .search_result a{
+#scrollable ul a, #nonprefered li, .search_result a{
   padding-left: 25px;
   color: black;
   text-decoration: none;
   font-size: 14px;
 }
+
 
 #scrollable ul a:hover{
   cursor: pointer;
