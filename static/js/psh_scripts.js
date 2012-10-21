@@ -4,7 +4,23 @@ var screenheight = screen.height;
 $(document).ready(function(){
     $('#scrollDiv, #scrollable').css('height', (screenheight-200));
 
-    get_library_records_for_subject();
+    $('#concept_graph a').tagcloud({
+      size: {start: 20, end: 50, unit: "pt"}, 
+      color: {start: '#689AD3', end: '#071871'}
+    });
+    
+    var subject = $("#heslo").text();
+    $.ajax({
+      url: '/get_library_records',
+      type: 'GET',
+      data: {subject: subject},
+      success: function(records){
+        $("#catalogue").append(records);
+        $("#catalogue_records").hide();
+        $("#catalogue_records").fadeIn();
+      },
+      
+    });
 
       $("#search").delegate('#psh_suggest', 'keyup', function(event){
         var text_input = $(this).val();

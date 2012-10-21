@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div id="scroll_div">
+<!-- <div id="scroll_div"> -->
     <div id="scrollable">
         <div class="title" id="heslo">{{ concept.heslo }}</div>
 
@@ -47,21 +47,18 @@
         {% endif %}
         <div id="hidden"></div>
     </div>
-</div>
-<script>
-//     var vis = new PSH.Visualization("visualization",
-//         {"id_concept": "{{ concept.id_heslo }}", "lang": "en"}// Volitelně objekt s atributy "id_concept" nebo "lang". Pokud není poskytnut, defaultně se tyto údaje vezmou z URI.
-//     );
-//     "vis.display", // Název callbackové funkce, který musí být ve tvaru "{název proměnné instance}.display"
-//         {} // Volitelně objekt s atributy "data" (objekt obsahující GET parametry) nebo "url". 
-//          // Pokud není poskytnut, pak se defaultně vezme nastavení pro službu http://data.ntkcz.cz/prohlizeni_psh/getjson
-// );
-</script>
-<!-- <div id="visualization">{% autoescape off %}{{ concept }}{% endautoescape %}</div> -->
-<div id="concept" data-subject_id="{{ concept.id_heslo }}">
-    <div id="visualization">
-    </div>
+<!-- </div> -->
 
+<div id="concept" data-subject_id="{{ concept.id_heslo }}">
+    <div id="concept_graph">
+    {% if concept.podrazeny %}
+        {% for heslo in concept.podrazeny %}
+                <a href="/skos/{{heslo.id_heslo}}" rel="{{ heslo.pocet }}">{{ heslo.heslo }}</a>
+        {% endfor %}
+    {% else %}
+        <div id="bottom_subject">{{ concept.heslo }}</div>
+    {% endif %}
+    </div>
     <div id="catalogue">
         <div class="title">Katalog Národní technické knihovny</div>
     </div>

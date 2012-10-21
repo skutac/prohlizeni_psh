@@ -245,14 +245,33 @@ def get_concept_dict(subject_id, lang):
         heslo["nepreferovany"] = []
 
         for p in podrazeny:
-                heslo["podrazeny"].append({"id_heslo":p["podrazeny"], "heslo":p["heslo"]})
+            count = query_to_dicts("""SELECT pocet FROM psh_pocetzaznamu WHERE id_heslo = '%s'"""%p["podrazeny"])
+            count = int(list(count)[0]["pocet"])
+            heslo["podrazeny"].append({"id_heslo":p["podrazeny"], "heslo":p["heslo"], "pocet":count})
         for p in pribuzny:
-                heslo["pribuzny"].append({"id_heslo":p["pribuzny"], "heslo":p["heslo"]})
+            heslo["pribuzny"].append({"id_heslo":p["pribuzny"], "heslo":p["heslo"]})
         for v in varianta:
-                heslo["nepreferovany"].append(v["varianta"])
+            heslo["nepreferovany"].append(v["varianta"])
     else:
         heslo = ""
+
+    heslo = normalize_counts(heslo)
     return heslo
+
+def normalize_counts(heslo):
+    counts = [h["pocet"] for h in heslo["podrazeny"]]
+    counts = list(set(counts))
+    counts.sort(key=lambda x: int(x))
+
+    count2weight = {}
+    for x in xrange(len(counts)):
+        count2weight[counts[x]] = x
+
+    for h in heslo["podrazeny"]:
+        h["pocet"] = count2weight[h["pocet"]]
+
+    return heslo
+
 
 def get_exact_match(term, lang):
     if lang == "cs":
@@ -293,17 +312,20 @@ def get_library_records(request):
     subject = request.GET["subject"]
     url = 'https://vufind.techlib.cz/vufind/Search/Results?lookfor="%s"&type=psh_facet&submit=Hledat'%subject
     url = url.encode("utf8")
+    url = re.sub(" ", "+", url)
     records = []
-    try:
-        catalogue = urllib2.urlopen(url)
-        catalogue_html = catalogue.read()
-    except Exception, e:
-        return HttpResponse("None")
+
+    catalogue = urllib2.urlopen(url)
+    catalogue_html = catalogue.read()
+    
+    if "nenalezlo žádné výsledky" in catalogue_html:
+        records_html = ["<div id='catalogue_header'>Nebyl nalezen žádný záznam.  <a href='", url,"'>Přejít do katalogu NTK >></a></div>"]
+        return HttpResponse("".join(records_html))
 
     record_count = re.search('class="yui-u first">(.*?)</div>', catalogue_html, re.S).group(1)
     record_count = [r for r in re.findall("<b>(.*?)</b>", record_count, re.S)][2].strip(" \n")
 
-    catalogue_records = re.findall('record\d+">(.*?)class="result ', catalogue_html, re.S)
+    catalogue_records = re.findall('record\d+">(.*?)getStatuses', catalogue_html, re.S)
 
     for record in catalogue_records:
         title = re.search('class="title">(.*?)</a', record, re.S).group(1).strip("/ ")
@@ -319,7 +341,13 @@ def get_library_records(request):
         else:
             author_link = ""
             author = ""
-        published = re.search("Vydáno:</strong>(.*?)<", record, re.S).group(1).strip(" \n")
+
+        published = re.search("Vydáno:</strong>(.*?)<", record, re.S)
+        if published:
+            published = published.group(1).strip(" \n")
+        else:
+            published = "-"
+
         records.append({"title":title, "link": link, "author":author, "author_link":author_link, "published":published})
 
     records_html = ["<div id='catalogue_header'>Záznamy 1 - ", str(len(records))," z celkem ", record_count,", <a href='", url,"'>Přejít do katalogu NTK >></a></div>"]
