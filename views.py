@@ -320,58 +320,61 @@ def get_czech_equivalent(subject):
         print str(e)
 
 def get_library_records(request):
-    subject = request.GET["subject"]
-    lang = request.GET["lang"]
+    try:
+        subject = request.GET["subject"]
+        lang = request.GET["lang"]
 
-    if lang == "en":
-        subject = get_czech_equivalent(subject)
+        if lang == "en":
+            subject = get_czech_equivalent(subject)
 
-    url = 'https://vufind.techlib.cz/vufind/Search/Results?lookfor="%s"&type=psh_facet&submit=Hledat'%subject
-    url = url.encode("utf8")
-    url = re.sub(" ", "+", url)
-    records = []
+        url = 'https://vufind.techlib.cz/vufind/Search/Results?lookfor="%s"&type=psh_facet&submit=Hledat'%subject
+        url = url.encode("utf8")
+        url = re.sub(" ", "+", url)
+        records = []
 
-    catalogue = urllib2.urlopen(url)
-    catalogue_html = catalogue.read()
+        catalogue = urllib2.urlopen(url)
+        catalogue_html = catalogue.read()
 
-    if "nenalezlo žádné výsledky" in catalogue_html:
-        records_html = ["<div id='catalogue_header'>Nebyl nalezen žádný záznam.  <a href='", url,"'>Přejít do katalogu NTK >></a></div>"]
+        if "nenalezlo žádné výsledky" in catalogue_html:
+            records_html = ["<div id='catalogue_header'>Nebyl nalezen žádný záznam.  <a href='", url,"'>Přejít do katalogu NTK >></a></div>"]
+            return HttpResponse("".join(records_html))
+
+        record_count = re.search('class="yui-u first">(.*?)</div>', catalogue_html, re.S).group(1)
+        record_count = [r for r in re.findall("<b>(.*?)</b>", record_count, re.S)][2].strip(" \n")
+
+        catalogue_records = re.findall('record\d+">(.*?)getStatuses', catalogue_html, re.S)
+
+
+        for record in catalogue_records:
+            title = re.search('class="title">(.*?)</a', record, re.S).group(1).strip("/ ")
+            link = re.search('resultItemLine1">.*?<a href="(.*?)"', record, re.S).group(1)
+            author_match = re.search('resultItemLine2">.*?<a href="(.*?)">(.*?)<', record, re.S)
+            
+            if not "saveLink" in author_match.group(0):
+                author_link = author_match.group(1)
+                author = author_match.group(2).strip(" \n").split(",")
+                if "1" in author[-1]:
+                    author = author[:-1]
+                author = ", ".join(author)
+            else:
+                author_link = ""
+                author = ""
+
+            published = re.search("Vydáno:</strong>(.*?)<", record, re.S)
+            if published:
+                published = published.group(1).strip(" \n")
+            else:
+                published = "-"
+
+            records.append({"title":title, "link": link, "author":author, "author_link":author_link, "published":published})
+
+        records_html = ["<div id='catalogue_header'>Záznamy 1 - ", str(len(records))," z celkem ", record_count,", <a href='", url,"'>Přejít do katalogu NTK >></a></div>"]
+        records_html.append("<ul id='catalogue_records'>\n")
+        for r in records:
+            records_html.append("".join(['<li><a class="record_title" href="', r["link"],'">', r["title"],' (', r["published"],')</a>, <a class="author" href="', r["author_link"],'">', r["author"],'</a></li>\n']))
+
+        records_html.append("</ul>\n")
+
         return HttpResponse("".join(records_html))
-
-    record_count = re.search('class="yui-u first">(.*?)</div>', catalogue_html, re.S).group(1)
-    record_count = [r for r in re.findall("<b>(.*?)</b>", record_count, re.S)][2].strip(" \n")
-
-    catalogue_records = re.findall('record\d+">(.*?)getStatuses', catalogue_html, re.S)
-
-
-    for record in catalogue_records:
-        title = re.search('class="title">(.*?)</a', record, re.S).group(1).strip("/ ")
-        link = re.search('resultItemLine1">.*?<a href="(.*?)"', record, re.S).group(1)
-        author_match = re.search('resultItemLine2">.*?<a href="(.*?)">(.*?)<', record, re.S)
-        
-        if not "saveLink" in author_match.group(0):
-            author_link = author_match.group(1)
-            author = author_match.group(2).strip(" \n").split(",")
-            if "1" in author[-1]:
-                author = author[:-1]
-            author = ", ".join(author)
-        else:
-            author_link = ""
-            author = ""
-
-        published = re.search("Vydáno:</strong>(.*?)<", record, re.S)
-        if published:
-            published = published.group(1).strip(" \n")
-        else:
-            published = "-"
-
-        records.append({"title":title, "link": link, "author":author, "author_link":author_link, "published":published})
-
-    records_html = ["<div id='catalogue_header'>Záznamy 1 - ", str(len(records))," z celkem ", record_count,", <a href='", url,"'>Přejít do katalogu NTK >></a></div>"]
-    records_html.append("<ul id='catalogue_records'>\n")
-    for r in records:
-        records_html.append("".join(['<li><a class="record_title" href="', r["link"],'">', r["title"],' (', r["published"],')</a>, <a class="author" href="', r["author_link"],'">', r["author"],'</a></li>\n']))
-
-    records_html.append("</ul>\n")
-
-    return HttpResponse("".join(records_html))
+    except Exception, e:
+        return HttpResponse(str(e))
