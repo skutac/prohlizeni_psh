@@ -21,10 +21,10 @@
         <ul id="broader">
         {% if concept.nadrazeny %}
             {% for heslo in concept.nadrazeny %}
-                <li class="clickable"><a href="/skos/{{heslo.id_heslo}}/en">{{ heslo.heslo }}</a></li>
+                <li class="clickable"><a href="{{heslo.id_heslo}}/en">{{ heslo.heslo }}</a></li>
             {% endfor %}
         {% else %}
-            <li class="clickable"><a href="/skos/en">Top concepts</a></li>
+            <li class="clickable"><a href="en">Top concepts</a></li>
         {% endif %}
         </ul>
         
@@ -32,7 +32,7 @@
         <div class="sublabel">Related concepts</div>
     	<ul id="related">
             {% for heslo in concept.pribuzny %}
-                <li class="clickable"><a href="/skos/{{heslo.id_heslo}}/en">{{ heslo.heslo }}</a></li>
+                <li class="clickable"><a href="{{heslo.id_heslo}}/en">{{ heslo.heslo }}</a></li>
             {% endfor %}
         </ul>
         {% endif %}
@@ -42,7 +42,7 @@
         <div class="sublabel">Narrower concepts</div>
     	<ul id="narrower">
             {% for heslo in concept.podrazeny %}
-                <li class="clickable"><a href="/skos/{{heslo.id_heslo}}/en">{{ heslo.heslo }}</a></li>
+                <li class="clickable"><a href="{{heslo.id_heslo}}/en">{{ heslo.heslo }}</a></li>
             {% endfor %}
         </ul>
         {% endif %}
@@ -52,7 +52,7 @@
     <div id="concept_graph">
     {% if concept.podrazeny %}
         {% for heslo in concept.podrazeny %}
-                <a href="/skos/{{heslo.id_heslo}}/en" rel="{{ heslo.pocet }}">{{ heslo.heslo }}</a>
+                <a href="{{heslo.id_heslo}}/en" rel="{{ heslo.pocet }}">{{ heslo.heslo }}</a>
         {% endfor %}
     {% else %}
         <div id="bottom_subject">{{ concept.heslo }}</div>

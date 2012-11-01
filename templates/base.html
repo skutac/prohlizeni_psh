@@ -4,7 +4,6 @@
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <title>Prohlížení PSH</title>
     <link href='http://fonts.googleapis.com/css?family=Average+Sans&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
-    <link href="/static/css/visualization.css" rel='stylesheet' type='text/css' />
     <link rel="stylesheet" href="/static/css/style.css" type="text/css" />
     <script type="text/javascript" src="/static/js/jquery.min.js"></script>
     <script type="text/javascript" src="/static/js/jquery-ui-1.8.10.custom.min.js"></script>
@@ -25,10 +24,6 @@
         </div>
         <a href="http://www.techlib.cz" target=blank><img id="logoNTK" src="/static/img/ntk_logo.png" title="Stránky NTK"/></a>
         <a href="http://www.techlib.cz/cs/14-psh" target=blank><img id="logoPSH" src="/static/img/psh_logo.png" title="Stránky PSH"/></a>
-
-        <!-- <div id="logoWikipedia">Prohlížení</div> -->
-
-        <!-- <a href="http://cs.wikipedia.org/wiki/Antropologie" target=blank><img id="logoWikipedia" src="/static/img/wikipedia-logo.png" title="Odkaz na Wikipedii"/></a> -->
 
         {% if concept.id_heslo %}
         <a href="/skos/{{ concept.id_heslo }}"><img id="czech" class="{{ nav.czech }}" src="/static/img/czech_flag.png" /></a>
