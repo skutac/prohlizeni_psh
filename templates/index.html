@@ -1,15 +1,19 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div id="scrollDiv">
-    <div id="scrollable">
-    <div id="gradient-top"></div>
+    <div id="left_nav">
         <div class="title">Hlavní hesla</div>
     	<ul id="top_concepts">
         {% for heslo in hesla %}
             <li class="clickable"><a href="{{heslo.id_heslo}}">{{ heslo.heslo }}</a></li>
         {% endfor %}
         </ul>
+    </div>
+<div id="concept">
+    <div id="concept_graph">
+        {% for heslo in hesla %}
+                <a href="{{heslo.id_heslo}}" rel="{{ heslo.pocet }}">{{ heslo.heslo }}</a>
+        {% endfor %}
     </div>
 </div>
 {% endblock %}

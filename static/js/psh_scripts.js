@@ -10,10 +10,18 @@ $(document).ready(function(){
     });
     
     var subject = $("#heslo").text();
+    var lang;
+    if($("#czech").attr("class") == "active"){
+      lang = "cs";
+    }
+    else{
+      lang = "en";
+    }
+
     $.ajax({
       url: '/get_library_records',
       type: 'GET',
-      data: {subject: subject},
+      data: {subject:subject, lang:lang},
       success: function(records){
         $("#catalogue").append(records);
         $("#catalogue_records").hide();

@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <title>Prohlížení PSH</title>
-    <link href='http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic' rel='stylesheet' type='text/css' />
+    <link href='http://fonts.googleapis.com/css?family=Average+Sans&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
     <link href="/static/css/visualization.css" rel='stylesheet' type='text/css' />
     <link rel="stylesheet" href="/static/css/style.css" type="text/css" />
     <script type="text/javascript" src="/static/js/jquery.min.js"></script>
@@ -15,32 +15,47 @@
 </script>
 
 <body>
-<div id="nav">
-<div id="search">
-<form action="/skos/search" method="get" id="search_form">
-<input type="text" id="psh_suggest" size="20" name="term"/>
-<input type="hidden" id="language" name="lang" value="{{ nav.lang }}"/>
-</form>
-<div id="search_title">{{ nav.search_label }}</div>
-</div>
-<a href="http://www.techlib.cz" target=blank><img id="logoNTK" src="/static/img/ntk_logo.png" title="Stránky NTK"/></a>
-<a href="http://www.techlib.cz/cs/14-psh" target=blank><img id="logoPSH" src="/static/img/psh_logo.png" title="Stránky PSH"/></a>
+    <div id="nav">
+        <div id="search">
+            <form action="/skos/search" method="get" id="search_form">
+                <input type="text" id="psh_suggest" size="20" name="term"/>
+                <input type="hidden" id="language" name="lang" value="{{ nav.lang }}"/>
+            </form>
+            <div id="search_title">{{ nav.search_label }}</div>
+        </div>
+        <a href="http://www.techlib.cz" target=blank><img id="logoNTK" src="/static/img/ntk_logo.png" title="Stránky NTK"/></a>
+        <a href="http://www.techlib.cz/cs/14-psh" target=blank><img id="logoPSH" src="/static/img/psh_logo.png" title="Stránky PSH"/></a>
 
-<!-- <div id="logoWikipedia">Prohlížení</div> -->
+        <!-- <div id="logoWikipedia">Prohlížení</div> -->
 
-<!-- <a href="http://cs.wikipedia.org/wiki/Antropologie" target=blank><img id="logoWikipedia" src="/static/img/wikipedia-logo.png" title="Odkaz na Wikipedii"/></a> -->
+        <!-- <a href="http://cs.wikipedia.org/wiki/Antropologie" target=blank><img id="logoWikipedia" src="/static/img/wikipedia-logo.png" title="Odkaz na Wikipedii"/></a> -->
 
-{% if concept.id_heslo %}
-<a href="/skos/{{ concept.id_heslo }}"><img id="czech" class="{{ nav.czech }}" src="/static/img/czech_flag.png" /></a>
-<a href="/skos/{{ concept.id_heslo }}/en"><img id="english" class="{{ nav.english }}" src="/static/img/english_flag.png" /></a>
-{% else %}
-<a href="/skos/"><img id="czech" class="{{ nav.czech }}" src="/static/img/czech_flag.png" /></a>
-<a href="/skos/en"><img id="english" class="{{ nav.english }}" src="/static/img/english_flag.png" /></a>
-{% endif %}
-</div>
+        {% if concept.id_heslo %}
+        <a href="/skos/{{ concept.id_heslo }}"><img id="czech" class="{{ nav.czech }}" src="/static/img/czech_flag.png" /></a>
+        <a href="/skos/{{ concept.id_heslo }}/en"><img id="english" class="{{ nav.english }}" src="/static/img/english_flag.png" /></a>
+        {% else %}
+        <a href="/skos/"><img id="czech" class="{{ nav.czech }}" src="/static/img/czech_flag.png" /></a>
+        <a href="/skos/en"><img id="english" class="{{ nav.english }}" src="/static/img/english_flag.png" /></a>
+        {% endif %}
+    </div>
 
-<div id="content">
-{% block content %}{% endblock %}
-</div>
+    <div id="content">
+        {% block content %}{% endblock %}
+    </div>
+
+    <div id="footer" about="" instanceof="cc:work" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
+        <div id"cc_logo">
+            <a rel="license" id="license" href="http://creativecommons.org/licenses/by-sa/3.0/cz/">
+                <img alt="Creative Commons License" style="border-width:0" src="/static/img/cc.png"/>
+            </a>
+        </div>
+        <div>
+            <strong property="dc:title">Polytematický strukturovaný heslář</strong> vytvořený <a href="http://www.techlib.cz" property="cc:attributionName" rel="cc:attributionURL">Národní technickou knihovnou</a>
+            podléhá licenci <a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/cz/">Creative Commons Uveďte autora-Zachovejte licenci 3.0 Česko</a>.
+        </div>
+        <!-- <div>Jak lze <a href="http://www.techlib.cz/cs/katalogy-a-databaze/psh/#7jmeno_zalozky">získat PSH ve formátu SKOS?</a>
+        </div> -->
+
+    </div>
 </body>
 </html>

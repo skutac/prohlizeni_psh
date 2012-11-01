@@ -32,21 +32,23 @@ def query_to_dicts(query_string, *query_args):
 
 def index(request):
    """Returns main site"""
-   hesla = []
-   topconcepts = Topconcepts.objects.all()
-   for heslo in topconcepts:
-       hesla.append(Hesla.objects.get(id_heslo=heslo.id_heslo))
-   hesla.sort(key=lambda x: x.heslo)
+   hesla = query_to_dicts("""SELECT topconcepts.id_heslo, hesla.heslo, psh_pocetzaznamu.pocet FROM topconcepts
+                                JOIN hesla ON hesla.id_heslo = topconcepts.id_heslo
+                                JOIN psh_pocetzaznamu ON psh_pocetzaznamu.id_heslo = topconcepts.id_heslo""")
+   hesla = list(hesla)
+   hesla = normalize_counts(hesla)
+   hesla.sort(key=lambda x: x["heslo"])
    nav = {"lang":"cs" ,"search_label": "Vyhledávání", "english":"inactive", "czech":"active"}
    return render_to_response("index.html", {"hesla":hesla, "nav": nav})
 
 def index_en(request):
    """Returns main site"""
-   hesla = []
-   topconcepts = Topconcepts.objects.all()
-   for heslo in topconcepts:
-       hesla.append(Ekvivalence.objects.get(id_heslo=heslo.id_heslo))
-   hesla.sort(key=lambda x: x.ekvivalent)
+   hesla = query_to_dicts("""SELECT topconcepts.id_heslo, ekvivalence.ekvivalent, psh_pocetzaznamu.pocet FROM topconcepts
+                                JOIN ekvivalence ON ekvivalence.id_heslo = topconcepts.id_heslo
+                                JOIN psh_pocetzaznamu ON psh_pocetzaznamu.id_heslo = topconcepts.id_heslo""")
+   hesla = list(hesla)
+   hesla = normalize_counts(hesla)
+   hesla.sort(key=lambda x: x["ekvivalent"])
    nav = {"lang":"en" ,"search_label": "Search", "english":"active", "czech":"inactive"}
    return render_to_response("index_en.html", {"hesla":hesla, "nav":nav})
     
@@ -255,11 +257,11 @@ def get_concept_dict(subject_id, lang):
     else:
         heslo = ""
 
-    heslo = normalize_counts(heslo)
+    heslo["podrazeny"] = normalize_counts(heslo["podrazeny"])
     return heslo
 
-def normalize_counts(heslo):
-    counts = [h["pocet"] for h in heslo["podrazeny"]]
+def normalize_counts(hesla):
+    counts = [h["pocet"] for h in hesla]
     counts = list(set(counts))
     counts.sort(key=lambda x: int(x))
 
@@ -267,10 +269,10 @@ def normalize_counts(heslo):
     for x in xrange(len(counts)):
         count2weight[counts[x]] = x
 
-    for h in heslo["podrazeny"]:
+    for h in hesla:
         h["pocet"] = count2weight[h["pocet"]]
 
-    return heslo
+    return hesla
 
 
 def get_exact_match(term, lang):
@@ -308,8 +310,22 @@ def get_concept_as_json(request, subject_id=None, lang="cs", callback=None):
         else:
             return HttpResponse(json.dumps(heslo), mimetype='application/json')
 
+def get_czech_equivalent(subject):
+    try:
+        equivalent = query_to_dicts("""SELECT heslo FROM hesla
+                                        JOIN ekvivalence on ekvivalence.id_heslo = hesla.id_heslo
+                                        WHERE ekvivalence.ekvivalent = '%s'""" %subject)
+        return list(equivalent)[0]["heslo"]
+    except Exception as e:
+        print str(e)
+
 def get_library_records(request):
     subject = request.GET["subject"]
+    lang = request.GET["lang"]
+
+    if lang == "en":
+        subject = get_czech_equivalent(subject)
+
     url = 'https://vufind.techlib.cz/vufind/Search/Results?lookfor="%s"&type=psh_facet&submit=Hledat'%subject
     url = url.encode("utf8")
     url = re.sub(" ", "+", url)
@@ -317,7 +333,7 @@ def get_library_records(request):
 
     catalogue = urllib2.urlopen(url)
     catalogue_html = catalogue.read()
-    
+
     if "nenalezlo žádné výsledky" in catalogue_html:
         records_html = ["<div id='catalogue_header'>Nebyl nalezen žádný záznam.  <a href='", url,"'>Přejít do katalogu NTK >></a></div>"]
         return HttpResponse("".join(records_html))
@@ -326,6 +342,7 @@ def get_library_records(request):
     record_count = [r for r in re.findall("<b>(.*?)</b>", record_count, re.S)][2].strip(" \n")
 
     catalogue_records = re.findall('record\d+">(.*?)getStatuses', catalogue_html, re.S)
+
 
     for record in catalogue_records:
         title = re.search('class="title">(.*?)</a', record, re.S).group(1).strip("/ ")

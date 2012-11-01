@@ -2,7 +2,7 @@
 
 {% block content %}
 <!-- <div id="scroll_div"> -->
-    <div id="scrollable">
+    <div id="left_nav">
         <div class="title" id="heslo">{{ concept.heslo }}</div>
 
         <div class="sublabel">URI: <a id="uri" href="http://psh.ntkcz.cz/skos/{{ concept.id_heslo }}">http://psh.ntkcz.cz/skos/{{ concept.id_heslo }}</a></div>
@@ -18,14 +18,16 @@
         </ul>
         {% endif %}
 
-        {% if concept.nadrazeny %}
         <div class="sublabel">Nadřazené heslo</div>
         <ul id="broader">
+        {% if concept.nadrazeny %}
             {% for heslo in concept.nadrazeny %}
                 <li class="clickable"><a href="/skos/{{heslo.id_heslo}}">{{ heslo.heslo }}</a></li>
             {% endfor %}
-        </ul>
+        {% else %}
+            <li class="clickable"><a href="/skos/">Hlavní hesla</a></li>
         {% endif %}
+        </ul>
         
         {% if concept.pribuzny %}
         <div class="sublabel">Příbuzná hesla</div>
@@ -45,8 +47,8 @@
             {% endfor %}
         </ul>
         {% endif %}
-        <div id="hidden"></div>
     </div>
+
 <!-- </div> -->
 
 <div id="concept" data-subject_id="{{ concept.id_heslo }}">

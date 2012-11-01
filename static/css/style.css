@@ -18,11 +18,7 @@ body{
 width: 95%;
 margin: auto;
 display: block;
-font-family: Univers55, times, sans-serif;
-}
-
-#hidden{
-  height: 100px;
+font-family: 'Average Sans', sans-serif;
 }
 
 
@@ -60,12 +56,12 @@ margin-top: 15px;
 
 #concept_graph a{
   text-decoration: none;
-  opacity: 0.5;
+  /*opacity: 0.5;*/
 }
 
 #concept_graph a:hover{
   cursor: pointer;
-  opacity: 1;
+  /*opacity: 1;*/
 }
 
 #bottom_subject{
@@ -74,12 +70,14 @@ margin-top: 15px;
 }
 
 #catalogue{
-/*width: 65%;
-margin-left: 30%;
-margin-top: 15px;*/
-padding-top: 50px;
-padding-left: 50px;
-/*border-top: solid #CCC8CA 2px;*/
+padding-top: 20px;
+padding-left: 30px;
+padding-bottom: 20px;
+padding-right: 20px;
+margin-left: 30px;
+margin-bottom: 20px;
+background-color: #efefef;
+border-radius: 15px;
 }
 
 #catalogue_header{
@@ -153,7 +151,18 @@ padding-left: 50px;
   background:url(/static/img/big_sprite.png) no-repeat -7px -148px;
 }
 
-#scrollable ul a, #nonprefered li, .search_result a{
+#left_nav{
+  background-color: #efefef;
+  border-radius: 15px;
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+/*#left_nav:hover{
+  border: 2px grey solid;
+}*/
+
+#left_nav ul a, #nonprefered li, .search_result a, #footer{
   padding-left: 25px;
   color: black;
   text-decoration: none;
@@ -161,7 +170,7 @@ padding-left: 50px;
 }
 
 
-#scrollable ul a:hover{
+#left_nav ul a:hover{
   cursor: pointer;
   font-weight: bold;
 }
@@ -178,7 +187,7 @@ border-right: solid gray 1px;
 position: fixed;
 }*/
 
-#scrollable{
+#left_nav{
 /*overflow: auto;*/
 width: 350px;
 padding-right: 20px;
@@ -301,6 +310,17 @@ border: none;
 
 img:hover{
 opacity: 0.5;
+}
+
+#footer{
+  width: 100%;
+  border-top: 1px solid grey;
+  padding-top: 15px;
+  padding-bottom: 15px;
+}
+
+#cc_logo{
+  float: left;
 }
 
 
