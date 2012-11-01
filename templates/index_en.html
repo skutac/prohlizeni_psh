@@ -5,7 +5,7 @@
         <div class="title">Top concepts</div>
     	<ul id="top_concepts">
         {% for heslo in hesla %}
-            <li class="clickable"><a href="{{heslo.id_heslo}}/en">{{ heslo.ekvivalent }}</a></li>
+            <li class="clickable"><a href="/prohlizeni_psh/skos/{{heslo.id_heslo}}/en">{{ heslo.ekvivalent }}</a></li>
         {% endfor %}
         </ul>
     </div>
@@ -13,7 +13,7 @@
     <div id="concept">
         <div id="concept_graph">
             {% for heslo in hesla %}
-                    <a href="{{heslo.id_heslo}}/en" rel="{{ heslo.pocet }}">{{ heslo.ekvivalent }}</a>
+                    <a href="/prohlizeni_psh/skos/{{heslo.id_heslo}}/en" rel="{{ heslo.pocet }}">{{ heslo.ekvivalent }}</a>
             {% endfor %}
         </div>
     </div>
