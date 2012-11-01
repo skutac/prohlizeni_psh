@@ -19,7 +19,7 @@ $(document).ready(function(){
     }
 
     $.ajax({
-      url: '/get_library_records',
+      url: 'get_library_records',
       type: 'GET',
       data: {subject:subject, lang:lang},
       success: function(records){
@@ -42,7 +42,7 @@ $(document).ready(function(){
             }
 
             $.ajax({type : "GET",
-                   url : "/suggest",
+                   url : "suggest",
                    datatype: "json",
                    success: function(subjects){
                           $("#psh_suggest").autocomplete({source: subjects});},
