@@ -316,7 +316,7 @@ def get_czech_equivalent(subject):
                                         JOIN ekvivalence on ekvivalence.id_heslo = hesla.id_heslo
                                         WHERE ekvivalence.ekvivalent = '%s'""" %subject)
         return list(equivalent)[0]["heslo"]
-    except Exception as e:
+    except Exception, e:
         print str(e)
 
 def get_library_records(request):
