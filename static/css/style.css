@@ -56,12 +56,12 @@ margin-top: 15px;
 
 #concept_graph a{
   text-decoration: none;
-  /*opacity: 0.5;*/
+  opacity: 0.6;
 }
 
 #concept_graph a:hover{
   cursor: pointer;
-  /*opacity: 1;*/
+  opacity: 1;
 }
 
 #bottom_subject{
@@ -113,9 +113,15 @@ border-radius: 15px;
   font-style: italic;
 }
 
-#equivalent{
+#equivalent a{
   color: grey;
   font-style: italic;
+  text-decoration: none;
+
+}
+
+#equivalent a:hover{
+  color: black;
 }
 
 #uri{
@@ -159,10 +165,6 @@ border-radius: 15px;
   margin-bottom: 15px;
 }
 
-/*#left_nav:hover{
-  border: 2px grey solid;
-}*/
-
 #left_nav ul a, #nonprefered li, .search_result a, #footer{
   padding-left: 25px;
   color: black;
@@ -176,25 +178,75 @@ border-radius: 15px;
   font-weight: bold;
 }
 
-
-/*#scroll_div{
-overflow-x: hidden;
-font-weight: normal;
-margin-right: 40px;
-margin-top: 0px;
-float: left;
-width: 350px;
-border-right: solid gray 1px;
-position: fixed;
-}*/
-
 #left_nav{
-/*overflow: auto;*/
 width: 350px;
 padding-right: 20px;
 padding-left: 20px;
 float: left;
-/*border-right: solid #CCC8CA 2px;*/
+}
+
+#functions{
+  margin-top: 30px;
+  text-decoration: underline;
+}
+
+#functions div{
+margin-left: 20px;
+margin-top: 5px;
+font-size: 14px;
+font-weight: bolder;
+}
+
+#functions a{
+  color: black;
+  margin-top: 10px;
+}
+
+#functions div:hover{
+  opacity: 0.7;
+  cursor: pointer;
+}
+/*#overlay{
+display: none;
+}*/
+
+#semantic_tag_format, #skos_format{
+  display:none;
+  background-color: #FFFFFF;
+  padding: 15px;
+  font-size: 12px;
+  border: solid #DBD3D6 7px;
+  border-radius: 10px;
+  margin-top: 25%;
+  position: absolute;
+  left: 25%;
+}
+
+#semantic_tag_format .description{
+  font-size: 14px;
+  font-weight: bolder;
+}
+
+.close{
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  font-size: 16px;
+}
+
+.close:hover{
+  cursor: pointer;
+  opacity: 0.7;
+}
+
+.code{
+  margin-top: 5px;
+  margin-left: 15px;
+}
+
+.sublabel_small{
+  font-weight: bold;
+  margin-top: 10px;
 }
 
 #logoNTK, #logoPSH{
@@ -281,19 +333,6 @@ font-weight: bolder;
 
 ul{
 list-style-type: none;
-}
-
-table table{
-width: 100%;
-}
-
-#searchResult{
-border-radius: 15px;
--moz-border-radius: 15px;
-background-color: #EDE8EA;
-width: 50%;
-padding-top: 10px;
-padding-bottom: 10px;
 }
 
 li{

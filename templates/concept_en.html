@@ -6,12 +6,12 @@
 
         <div class="sublabel">URI: <a id="uri" href="http://psh.ntkcz.cz/skos/{{ concept.id_heslo }}/en">http://psh.ntkcz.cz/skos/{{ concept.id_heslo }}/en</a></div>
 
-        <div class="sublabel">Czech equivalent: <span id="equivalent">{{ concept.ekvivalent }}</span></div>
+        <div class="sublabel">Czech equivalent: <span id="equivalent"><a href="/prohlizeni_psh/skos/{{concept.id_heslo}}">{{ concept.ekvivalent }}</a></span></div>
         
-        {% if concept.nepreferovany %}
+        {% if concept.nepreferovany.en %}
         <div class="sublabel">Nonpreferred labels</div>
     	<ul id="nonprefered">
-            {% for heslo in concept.nepreferovany %}
+            {% for heslo in concept.nepreferovany.en %}
                 <li class="">{{ heslo }}</li>
             {% endfor %}
         </ul>
@@ -24,7 +24,7 @@
                 <li class="clickable"><a href="/prohlizeni_psh/skos/{{heslo.id_heslo}}/en">{{ heslo.heslo }}</a></li>
             {% endfor %}
         {% else %}
-            <li class="clickable"><a href="en">Top concepts</a></li>
+            <li class="clickable"><a href="/prohlizeni_psh/skos/en">Top concepts</a></li>
         {% endif %}
         </ul>
         

@@ -7,12 +7,12 @@
 
         <div class="sublabel">URI: <a id="uri" href="http://psh.ntkcz.cz/skos/{{ concept.id_heslo }}">http://psh.ntkcz.cz/skos/{{ concept.id_heslo }}</a></div>
 
-       <div class="sublabel">Anglický ekvivalent: <span id="equivalent">{{ concept.ekvivalent }}</span></div>
+       <div class="sublabel">Anglický ekvivalent: <span id="equivalent"><a href="/prohlizeni_psh/skos/{{concept.id_heslo}}/en">{{ concept.ekvivalent }}</a></span></div>
         
-        {% if concept.nepreferovany %}
+        {% if concept.nepreferovany.cs %}
         <div class="sublabel">Nepreferovaná znění</div>
     	<ul id="nonprefered">
-            {% for heslo in concept.nepreferovany %}
+            {% for heslo in concept.nepreferovany.cs %}
                 <li>{{ heslo }}</li>
             {% endfor %}
         </ul>
@@ -25,7 +25,7 @@
                 <li class="clickable"><a href="{{heslo.id_heslo}}">{{ heslo.heslo }}</a></li>
             {% endfor %}
         {% else %}
-            <li class="clickable"><a href="">Hlavní hesla</a></li>
+            <li class="clickable"><a href="/prohlizeni_psh/skos/">Hlavní hesla</a></li>
         {% endif %}
         </ul>
         
@@ -47,6 +47,15 @@
             {% endfor %}
         </ul>
         {% endif %}
+
+        <div id="functions">
+            <div id="skos" rel="#skos_format">Heslo ve formátu SKOS <sup><a href="http://en.wikipedia.org/wiki/Simple_Knowledge_Organization_System" target=blank>?</a></sup></div>
+
+            <div id="semantic_tag" rel="#semantic_tag_format">Tag z řízeného hesláře <sup><a href="http://en.wikipedia.org/wiki/Simple_Knowledge_Organization_System" target=blank>?</a></sup></div>
+
+            <div><a href="http://www.techlib.cz/cs/katalogy-a-databaze/psh/navrh-noveho-hesla/" target=blank>Návrh nového hesla <sup>></sup></a></div>
+        </div>
+
     </div>
 
 <!-- </div> -->
@@ -65,6 +74,61 @@
         <div class="title">Katalog Národní technické knihovny</div>
     </div>
 </div>
+
+
+    <div id="skos_format">
+        <div class="close">&#10006;</div>
+        &lt;skos:Concept rdf:about="http://psh.ntkcz.cz/skos/{{ concept.id_heslo }}"&gt;
+        <br>
+        &nbsp;&nbsp;&lt;skos:inScheme rdf:resource="http://psh.ntkcz.cz/skos/"/&gt;
+        <br>
+        &nbsp;&nbsp;&lt;dc:identifier&gt;{{ concept.id_heslo }}&lt;/dc:identifier&gt;
+        <br>
+        &nbsp;&nbsp;&lt;skos:prefLabel xml:lang="cs"&gt;{{ concept.heslo }}&lt;/skos:prefLabel&gt;
+        <br>
+        &nbsp;&nbsp;&lt;skos:prefLabel xml:lang="en"&gt;{{ concept.ekvivalent }}&lt;/skos:prefLabel&gt;
+        <br>
+        {% for heslo in concept.nepreferovany.cs %}
+                &nbsp;&nbsp;&lt;skos:altLabel xml:lang="cs"&gt;{{heslo}}&lt;/skos:altLabel&gt;
+                <br>
+        {% endfor %}
+        {% for heslo in concept.nepreferovany.en %}
+                &nbsp;&nbsp;&lt;skos:altLabel xml:lang="en"&gt;{{heslo}}&lt;/skos:altLabel&gt;
+                <br>
+        {% endfor %}
+        {% for heslo in concept.podrazeny %}
+                &nbsp;&nbsp;&lt;skos:narrower rdf:resource="http://psh.ntkcz.cz/skos/{{heslo.id_heslo}}"/&gt;
+                <br>
+        {% endfor %}
+        {% for heslo in concept.pribuzny %}
+                &nbsp;&nbsp;&lt;skos:related rdf:resource="http://psh.ntkcz.cz/skos/{{heslo.id_heslo}}"/&gt;
+                <br>
+        {% endfor %}
+        &lt;/skos:Concept&gt;
+    </div>
+
+    <div id="semantic_tag_format">
+        <div class="close">&#10006;</div>
+        <div class="description">Níže uvedené úryvky metadat lze vložit do HTML dokumentu pro dosažení jeho sémantického popisu:</div>
+
+        <div class="sublabel_small">Dublin Core:</div>
+        <div class="code">
+        &lt;p about="" xmlns:dc="http://purl.org/dc/elements/1.1/"&gt;
+        <br>
+        &nbsp;&nbsp;&lt;a href="http://psh.ntkcz.cz/skos/{{ concept.id_heslo }}" rel="dc:subject"&gt;{{ concept.heslo }}&lt;/a&gt;
+        <br>
+        &lt;/p&gt;
+        </div>
+        <div class="sublabel_small">CommonTag:</div>
+        <div class="code">
+        &lt;body xmlns:ctag="http://commontag.org/ns#" rel="ctag:tagged"&gt;
+        <br>
+        &nbsp;&nbsp;&lt;span typeof="ctag:Tag" rel="ctag:means" resource="http://psh.ntkcz.cz/skos/{{ concept.id_heslo }}" property="ctag:label" content="{{ concept.heslo }}" /&gt;
+        <br>
+        &lt;/body&gt;
+        </div>
+    </div>
+
 
 
 {% endblock %}

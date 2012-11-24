@@ -193,10 +193,10 @@ def get_concept_dict(subject_id, lang):
                 FROM pribuznost
                 LEFT JOIN ekvivalence ON ekvivalence.id_heslo = pribuznost.pribuzny
                 WHERE pribuznost.id_heslo = '%s'""" %subject_id)
-        
-        varianta = query_to_dicts("""SELECT varianta
+
+        varianta = query_to_dicts("""SELECT varianta, jazyk
                 FROM varianta
-                WHERE varianta.jazyk = 'en' AND varianta.id_heslo = '%s'""" %subject_id)
+                WHERE varianta.id_heslo = '%s'""" %subject_id)
 
     elif lang == "cs":
         heslo = query_to_dicts("""SELECT hesla.id_heslo, 
@@ -226,9 +226,9 @@ def get_concept_dict(subject_id, lang):
                 LEFT JOIN hesla ON hesla.id_heslo = pribuznost.pribuzny
                 WHERE pribuznost.id_heslo = '%s'""" %subject_id)
                 
-        varianta = query_to_dicts("""SELECT varianta
+        varianta = query_to_dicts("""SELECT varianta, jazyk
                 FROM varianta
-                WHERE varianta.jazyk = 'cs' AND varianta.id_heslo = '%s'""" %subject_id)
+                WHERE varianta.id_heslo = '%s'""" %subject_id)
 
     else:
         heslo = ""
@@ -244,7 +244,7 @@ def get_concept_dict(subject_id, lang):
 
         heslo["podrazeny"] = []
         heslo["pribuzny"] = []
-        heslo["nepreferovany"] = []
+        heslo["nepreferovany"] = {"en":[], "cs":[]}
 
         for p in podrazeny:
             count = query_to_dicts("""SELECT pocet FROM psh_pocetzaznamu WHERE id_heslo = '%s'"""%p["podrazeny"])
@@ -253,7 +253,7 @@ def get_concept_dict(subject_id, lang):
         for p in pribuzny:
             heslo["pribuzny"].append({"id_heslo":p["pribuzny"], "heslo":p["heslo"]})
         for v in varianta:
-            heslo["nepreferovany"].append(v["varianta"])
+            heslo["nepreferovany"][v["jazyk"]].append(v["varianta"])
     else:
         heslo = ""
 
@@ -368,7 +368,10 @@ def get_library_records(request):
 
             records.append({"title":title, "link": link, "author":author, "author_link":author_link, "published":published})
 
-        records_html = ["<div id='catalogue_header'>Záznamy 1 - ", str(len(records))," z celkem ", record_count,", <a href='", url,"'>Přejít do katalogu NTK >></a></div>"]
+        if lang == "en":
+            records_html = ["<div id='catalogue_header'>Records 1 - ", str(len(records))," from ", record_count,", <a href='", url,"'>Go to the catalogue of NTK >></a></div>"]
+        else:
+            records_html = ["<div id='catalogue_header'>Záznamy 1 - ", str(len(records))," z celkem ", record_count,", <a href='", url,"'>Přejít do katalogu NTK >></a></div>"]
         records_html.append("<ul id='catalogue_records'>\n")
         for r in records:
             records_html.append("".join(['<li><a class="record_title" href="', r["link"],'">', r["title"],' (', r["published"],')</a>, <a class="author" href="', r["author_link"],'">', r["author"],'</a></li>\n']))

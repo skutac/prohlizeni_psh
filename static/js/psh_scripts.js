@@ -3,6 +3,7 @@ var screenheight = screen.height;
 
 $(document).ready(function(){
     $('#scrollDiv, #scrollable').css('height', (screenheight-200));
+    
 
     $('#concept_graph a').tagcloud({
       size: {start: 20, end: 50, unit: "pt"}, 
@@ -54,20 +55,8 @@ $(document).ready(function(){
     }
     });
 
-    // $('#english').click(function(){
-    //     var lang = $('#language').val();
-
-    //     if(lang == "cs"){
-    //         $(this).css('opacity', '0.9');
-    //         $('#search_language').text('angličitna');
-    //         $('#language').val('en');
-    //     }
-    //     else{
-    //         $(this).css('opacity', '0.2');
-    //         $('#search_language').text('čeština');
-    //         $('#language').val('cs');
-    //     }
-    // });
+    $("#skos[rel]").overlay();
+    $("#semantic_tag[rel]").overlay({left:"center", fixed:false});
 });
 
 function getSuggestedSubject(subject){
@@ -113,55 +102,3 @@ function get_library_records_for_subject(){
     });
     
 }
-
-
-// function getSearchResult(subject, english){
-//     $.ajax({type : 'POST',
-//               url : 'getSearchResult', 
-//               success: function(subjects){
-// //                        $('#concept').html(concept).hide();
-//                           $('#concept').html(subjects);
-// //                        $('#concept').fadeIn('slow');
-//                        },
-//               data : {substring : subject, english : english}
-//       });
-// }
-
-
-// function checkWikipedia(subjectID){
-//       var parent = $('#logoWikipedia').parent();
-//       var subject = $('#' + subjectID).text();
-//       var logoWikipedia = $('#logoWikipedia'); 
-//       parent.removeAttr('href');
-//       logoWikipedia.attr('class', 'inactive');
-//       logoWikipedia.css('opacity', '0.3');
-      
-//       $.ajax({type: 'POST',
-//               url: '/prohlizeni_psh/wikipedia',
-//               data : {subjectID: subjectID},
-//               success: function(msg){
-// //                   console.log("---- Get wikipedia link:" + msg + " ----");
-//                   if(msg == "True"){
-//                     logoWikipedia.removeAttr('class');
-//                     logoWikipedia.css('opacity', '1');
-//                     parent.attr('href', 'http://cs.wikipedia.org/wiki/' + subject);
-//                   }
-//                   else{
-//                     $.ajax({type : 'GET',
-// 	                    dataType: 'jsonp',
-//                             url : 'http://cs.wikipedia.org/w/api.php?action=opensearch&search=' + subject, 
-//                             success: function(concept){
-// 		              if(concept[1].length > 0){
-// 		                  logoWikipedia.removeAttr('class');
-// 		                  logoWikipedia.css('opacity', '1');
-// 		                  parent.attr('href', 'http://cs.wikipedia.org/wiki/' + subject);
-//                                   saveWikipediaLink(subjectID);
-// 		              }
-//                             },
-//                             data : {}
-//                     });
-//                   }
-//               }
-//             });
-// }
-
