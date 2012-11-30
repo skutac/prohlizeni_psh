@@ -443,3 +443,11 @@ opacity: 0.5;
 	margin: -1px;
 }
 
+.ui-helper-hidden-accessible{
+  display: none;
+}
+
+.ui-state-focus{
+  background-color: #E3DEE0;
+}
+

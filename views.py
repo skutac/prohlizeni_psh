@@ -377,7 +377,7 @@ def get_library_records(request):
             records_html = ["<div id='catalogue_header'>Záznamy 1 - ", str(len(records))," z celkem ", record_count,", <a href='", url,"'>Přejít do katalogu NTK >></a></div>"]
         records_html.append("<ul id='catalogue_records'>\n")
         for r in records:
-            records_html.append("".join(['<li><a class="record_title" href="', r["link"],'">', r["title"],' (', r["published"],')</a>, <a class="author" href="', r["author_link"],'">', r["author"],'</a></li>\n']))
+            records_html.append("".join(['<li><a class="record_title" target=blank href="', r["link"],'">', r["title"],' (', r["published"],')</a>, <a class="author" href="', r["author_link"],'">', r["author"],'</a></li>\n']))
 
         records_html.append("</ul>\n")
 
