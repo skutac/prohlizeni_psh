@@ -4,10 +4,7 @@ import re
 from itertools import *
 import urllib2, urllib
 
-# from psh_manager_online import handler
-# from psh_manager_online.psh.models import Hesla, Varianta, Ekvivalence, Hierarchie, Topconcepts, Pribuznost, Zkratka, Vazbywikipedia, SysNumber
-
-from prohlizeni_psh.psh.models import Topconcepts, Hesla, Varianta, Ekvivalence
+from prohlizeni_psh.psh.models import Hesla, Varianta, Ekvivalence
 
 from django.http import HttpResponse, Http404
 from django.shortcuts import render_to_response
@@ -166,6 +163,18 @@ def get_concept_en(request, subject_id):
 
 def get_concept_dict(subject_id, lang):
 
+    varianta = query_to_dicts("""SELECT varianta, jazyk
+                FROM varianta
+                WHERE varianta.id_heslo = '%s'""" %subject_id)
+
+    dbpedia = query_to_dicts("""SELECT uri_dbpedia, heslo_dbpedia
+                FROM vazbydbpedia
+                WHERE vazbydbpedia.id_heslo = '%s'""" %subject_id)
+
+    wikipedia = query_to_dicts("""SELECT uri_wikipedia, heslo_wikipedia
+                FROM vazbywikipedia
+                WHERE vazbywikipedia.id_heslo = '%s'""" %subject_id)
+
     if lang == "en":
         heslo = query_to_dicts("""SELECT ekvivalence.id_heslo, 
                 ekvivalence.ekvivalent as heslo
@@ -194,10 +203,6 @@ def get_concept_dict(subject_id, lang):
                 LEFT JOIN ekvivalence ON ekvivalence.id_heslo = pribuznost.pribuzny
                 WHERE pribuznost.id_heslo = '%s'""" %subject_id)
 
-        varianta = query_to_dicts("""SELECT varianta, jazyk
-                FROM varianta
-                WHERE varianta.id_heslo = '%s'""" %subject_id)
-
     elif lang == "cs":
         heslo = query_to_dicts("""SELECT hesla.id_heslo, 
                 hesla.heslo 
@@ -225,10 +230,6 @@ def get_concept_dict(subject_id, lang):
                 FROM pribuznost
                 LEFT JOIN hesla ON hesla.id_heslo = pribuznost.pribuzny
                 WHERE pribuznost.id_heslo = '%s'""" %subject_id)
-                
-        varianta = query_to_dicts("""SELECT varianta, jazyk
-                FROM varianta
-                WHERE varianta.id_heslo = '%s'""" %subject_id)
 
     else:
         heslo = ""
@@ -245,6 +246,8 @@ def get_concept_dict(subject_id, lang):
         heslo["podrazeny"] = []
         heslo["pribuzny"] = []
         heslo["nepreferovany"] = {"en":[], "cs":[]}
+        heslo["dbpedia"] = list(dbpedia)
+        heslo["wikipedia"] = list(wikipedia)
 
         for p in podrazeny:
             count = query_to_dicts("""SELECT pocet FROM psh_pocetzaznamu WHERE id_heslo = '%s'"""%p["podrazeny"])

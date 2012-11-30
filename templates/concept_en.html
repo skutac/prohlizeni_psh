@@ -46,6 +46,34 @@
             {% endfor %}
         </ul>
         {% endif %}
+
+        {% if concept.dbpedia or concept.wikipedia%}
+        <div class="sublabel">Related concepts</div>
+        <ul id="external_concepts">
+        {% if concept.dbpedia %}
+            <div>DBPedia:</div>
+            {% for heslo in concept.dbpedia %}
+                <li class="clickable"><a href="{{ heslo.uri_dbpedia }}" target=blank>{{ heslo.heslo_dbpedia }}</a></li>
+            {% endfor %}
+        {% endif %}
+
+        {% if concept.wikipedia %}
+            <div>Wikipedia:</div>
+            {% for heslo in concept.wikipedia %}
+                <li class="clickable"><a href="{{ heslo.uri_wikipedia }}" target=blank>{{ heslo.heslo_wikipedia }}</a></li>
+            {% endfor %}
+        {% endif %}
+        </ul>
+        {% endif %}
+
+        <div id="functions">
+            <div id="skos" rel="#skos_format">Concept in SKOS format <sup><a href="http://en.wikipedia.org/wiki/Simple_Knowledge_Organization_System" target=blank>?</a></sup></div>
+
+            <div id="semantic_tag" rel="#semantic_tag_format">Tag from controlled vocabulary <sup><a href="http://en.wikipedia.org/wiki/Simple_Knowledge_Organization_System" target=blank>?</a></sup></div>
+
+            <div><a href="http://www.techlib.cz/cs/katalogy-a-databaze/psh/navrh-noveho-hesla/" target=blank>New concept proposition <sup>></sup></a></div>
+        </div>
+
     </div>
 
 <div id="concept" data-subject_id="{{ concept.id_heslo }}">
@@ -59,7 +87,60 @@
     {% endif %}
     </div>
     <div id="catalogue">
-        <div class="title">Catalogue of National technical library</div>
+        <div class="title">Catalogue of National technical library<span><img id="loading" src="/static/img/loading.gif" /></span></div>
     </div>
 </div>
+
+<div id="skos_format">
+        <div class="close">&#10006;</div>
+        &lt;skos:Concept rdf:about="http://psh.ntkcz.cz/skos/{{ concept.id_heslo }}"&gt;
+        <br>
+        &nbsp;&nbsp;&lt;skos:inScheme rdf:resource="http://psh.ntkcz.cz/skos/"/&gt;
+        <br>
+        &nbsp;&nbsp;&lt;dc:identifier&gt;{{ concept.id_heslo }}&lt;/dc:identifier&gt;
+        <br>
+        &nbsp;&nbsp;&lt;skos:prefLabel xml:lang="cs"&gt;{{ concept.heslo }}&lt;/skos:prefLabel&gt;
+        <br>
+        &nbsp;&nbsp;&lt;skos:prefLabel xml:lang="en"&gt;{{ concept.ekvivalent }}&lt;/skos:prefLabel&gt;
+        <br>
+        {% for heslo in concept.nepreferovany.cs %}
+                &nbsp;&nbsp;&lt;skos:altLabel xml:lang="cs"&gt;{{heslo}}&lt;/skos:altLabel&gt;
+                <br>
+        {% endfor %}
+        {% for heslo in concept.nepreferovany.en %}
+                &nbsp;&nbsp;&lt;skos:altLabel xml:lang="en"&gt;{{heslo}}&lt;/skos:altLabel&gt;
+                <br>
+        {% endfor %}
+        {% for heslo in concept.podrazeny %}
+                &nbsp;&nbsp;&lt;skos:narrower rdf:resource="http://psh.ntkcz.cz/skos/{{heslo.id_heslo}}"/&gt;
+                <br>
+        {% endfor %}
+        {% for heslo in concept.pribuzny %}
+                &nbsp;&nbsp;&lt;skos:related rdf:resource="http://psh.ntkcz.cz/skos/{{heslo.id_heslo}}"/&gt;
+                <br>
+        {% endfor %}
+        &lt;/skos:Concept&gt;
+    </div>
+
+    <div id="semantic_tag_format">
+        <div class="close">&#10006;</div>
+        <div class="description">These metadata snippets can be embedded in an HTML document to achieve its semantic description:</div>
+
+        <div class="sublabel_small">Dublin Core:</div>
+        <div class="code">
+        &lt;p about="" xmlns:dc="http://purl.org/dc/elements/1.1/"&gt;
+        <br>
+        &nbsp;&nbsp;&lt;a href="http://psh.ntkcz.cz/skos/{{ concept.id_heslo }}" rel="dc:subject"&gt;{{ concept.heslo }}&lt;/a&gt;
+        <br>
+        &lt;/p&gt;
+        </div>
+        <div class="sublabel_small">CommonTag:</div>
+        <div class="code">
+        &lt;body xmlns:ctag="http://commontag.org/ns#" rel="ctag:tagged"&gt;
+        <br>
+        &nbsp;&nbsp;&lt;span typeof="ctag:Tag" rel="ctag:means" resource="http://psh.ntkcz.cz/skos/{{ concept.id_heslo }}" property="ctag:label" content="{{ concept.heslo }}" /&gt;
+        <br>
+        &lt;/body&gt;
+        </div>
+    </div>
 {% endblock %}

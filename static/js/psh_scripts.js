@@ -6,7 +6,7 @@ $(document).ready(function(){
     
 
     $('#concept_graph a').tagcloud({
-      size: {start: 20, end: 50, unit: "pt"}, 
+      size: {start: 30, end: 60, unit: "px"}, 
       color: {start: '#689AD3', end: '#071871'}
     });
     
@@ -24,6 +24,7 @@ $(document).ready(function(){
       type: 'GET',
       data: {subject:subject, lang:lang},
       success: function(records){
+        $("#loading").fadeOut();
         $("#catalogue").append(records);
         $("#catalogue_records").hide();
         $("#catalogue_records").fadeIn();

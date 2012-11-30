@@ -50,8 +50,7 @@ margin-top: 15px;
   text-align: center;
   margin-left: auto;
   margin-right: auto;
-  line-height: 0.7;
-  z-index: 0;
+  line-height: 1;
 }
 
 #concept_graph a{
@@ -67,6 +66,10 @@ margin-top: 15px;
 #bottom_subject{
   font-size: 40px;
   color: #071871;
+}
+
+#loading{
+  margin-left: 20px;
 }
 
 #catalogue{
@@ -155,6 +158,18 @@ border-radius: 15px;
 }
 #related a:hover{
   background:url(/static/img/big_sprite.png) no-repeat -7px -148px;
+}
+
+#external_concepts div{
+  margin-top: 15px;
+}
+
+#external_concepts a{
+  background:url(/static/img/sprite2.png) no-repeat 2px 2px;
+}
+
+#external_concepts a:hover{
+  background:url(/static/img/sprite2.png) no-repeat 2px -26px;
 }
 
 #left_nav{

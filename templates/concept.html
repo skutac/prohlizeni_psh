@@ -48,6 +48,25 @@
         </ul>
         {% endif %}
 
+        {% if concept.dbpedia or concept.wikipedia%}
+        <div class="sublabel">Příbuzné koncepty</div>
+        <ul id="external_concepts">
+        {% if concept.dbpedia %}
+            <div>DBPedia:</div>
+            {% for heslo in concept.dbpedia %}
+                <li class="clickable"><a href="{{ heslo.uri_dbpedia }}" target=blank>{{ heslo.heslo_dbpedia }}</a></li>
+            {% endfor %}
+        {% endif %}
+
+        {% if concept.wikipedia %}
+            <div>Wikipedia:</div>
+            {% for heslo in concept.wikipedia %}
+                <li class="clickable"><a href="{{ heslo.uri_wikipedia }}" target=blank>{{ heslo.heslo_wikipedia }}</a></li>
+            {% endfor %}
+        {% endif %}
+        </ul>
+        {% endif %}
+
         <div id="functions">
             <div id="skos" rel="#skos_format">Heslo ve formátu SKOS <sup><a href="http://en.wikipedia.org/wiki/Simple_Knowledge_Organization_System" target=blank>?</a></sup></div>
 
@@ -71,7 +90,7 @@
     {% endif %}
     </div>
     <div id="catalogue">
-        <div class="title">Katalog Národní technické knihovny</div>
+        <div class="title">Katalog Národní technické knihovny<span><img id="loading" src="/static/img/loading.gif" /></span></div>
     </div>
 </div>
 
