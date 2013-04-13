@@ -21,9 +21,7 @@
         <div class="sublabel">Nadřazené heslo</div>
         <ul id="broader">
         {% if concept.nadrazeny %}
-            {% for heslo in concept.nadrazeny %}
-                <li class="clickable"><a href="{{heslo.id_heslo}}">{{ heslo.heslo }}</a></li>
-            {% endfor %}
+            <li class="clickable"><a href="{{concept.nadrazeny.id_heslo}}">{{ concept.nadrazeny.heslo }}</a></li>
         {% else %}
             <li class="clickable"><a href="/prohlizeni_psh/skos/">Hlavní hesla</a></li>
         {% endif %}
@@ -68,9 +66,9 @@
         {% endif %}
 
         <div id="functions">
-            <div id="skos" rel="#skos_format">Heslo ve formátu SKOS <sup><a href="http://en.wikipedia.org/wiki/Simple_Knowledge_Organization_System" target=blank>?</a></sup></div>
+            <div><span id="skos" rel="#skos_format">Heslo ve formátu SKOS</span> <sup><a href="http://en.wikipedia.org/wiki/Simple_Knowledge_Organization_System" target=blank>?</a></sup></div>
 
-            <div id="semantic_tag" rel="#semantic_tag_format">Tag z řízeného hesláře <sup><a href="http://en.wikipedia.org/wiki/Simple_Knowledge_Organization_System" target=blank>?</a></sup></div>
+            <div><span  id="semantic_tag" rel="#semantic_tag_format">Tag z řízeného hesláře</span> <sup><a href="http://en.wikipedia.org/wiki/Simple_Knowledge_Organization_System" target=blank>?</a></sup></div>
 
             <div><a href="http://www.techlib.cz/cs/katalogy-a-databaze/psh/navrh-noveho-hesla/" target=blank>Návrh nového hesla <sup>></sup></a></div>
         </div>
@@ -80,6 +78,12 @@
 <!-- </div> -->
 
 <div id="concept" data-subject_id="{{ concept.id_heslo }}">
+    <div id="path"><a href="/prohlizeni_psh/skos/en">Hlavní hesla</a>
+        {% for nadrazeny in concept.nadrazene %}
+            > <a href="/prohlizeni_psh/skos/{{nadrazeny.id_heslo}}/en">{{ nadrazeny.heslo }}</a>
+        {% endfor %}
+            > {{ concept.heslo }}
+    </div>
     <div id="concept_graph">
     {% if concept.podrazeny %}
         {% for heslo in concept.podrazeny %}

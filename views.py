@@ -28,7 +28,7 @@ def query_to_dicts(query_string, *query_args):
     return
 
 def index(request):
-   """Returns main site"""
+   """Returns main site in czech"""
    hesla = query_to_dicts("""SELECT topconcepts.id_heslo, hesla.heslo, psh_pocetzaznamu.pocet FROM topconcepts
                                 JOIN hesla ON hesla.id_heslo = topconcepts.id_heslo
                                 JOIN psh_pocetzaznamu ON psh_pocetzaznamu.id_heslo = topconcepts.id_heslo""")
@@ -39,7 +39,7 @@ def index(request):
    return render_to_response("index.html", {"hesla":hesla, "nav": nav})
 
 def index_en(request):
-   """Returns main site"""
+   """Returns main site in english"""
    hesla = query_to_dicts("""SELECT topconcepts.id_heslo, ekvivalence.ekvivalent, psh_pocetzaznamu.pocet FROM topconcepts
                                 JOIN ekvivalence ON ekvivalence.id_heslo = topconcepts.id_heslo
                                 JOIN psh_pocetzaznamu ON psh_pocetzaznamu.id_heslo = topconcepts.id_heslo""")
@@ -50,7 +50,7 @@ def index_en(request):
    return render_to_response("index_en.html", {"hesla":hesla, "nav":nav})
     
 def suggest(request):
-    """Return suggested labels according to given text input and language selector"""
+    """Return suggested labels according to given text input and language (en/cs)"""
     text_input = request.GET["input"]
     if request.GET["lang"] == "cs":
         hesla = Hesla.objects.filter(heslo__istartswith=text_input)
@@ -90,7 +90,7 @@ def suggest(request):
     return HttpResponse(json.dumps(seznam[0:60]), mimetype='application/json')
 
 def search(request):
-    """Return HTML site with search results to given text input and language selector"""
+    """Return HTML site with search result for text input and language (en/cs)"""
     term = request.GET['term']
     lang = request.GET['lang']
 
@@ -152,17 +152,17 @@ def bold(substring, text):
     return re.sub(substring, "".join(["<b>", substring, "</b>"]), text)
 
 def get_concept(request, subject_id):
-    """Interface for subject retrieval"""
+    """Interface for subject retrieval in czech"""
     nav = {"lang":"cs" ,"search_label": "Vyhledávání", "english":"inactive", "czech":"active"}
     return render_to_response("concept.html", {"concept": get_concept_dict(subject_id, "cs"), "nav": nav})
 
 def get_concept_en(request, subject_id):
-    """Interface for subject retrieval"""
+    """Interface for subject retrieval in english"""
     nav = {"lang":"en" ,"search_label": "Search", "english":"active", "czech":"inactive"}
     return render_to_response("concept_en.html", {"concept": get_concept_dict(subject_id, "en"), "nav": nav})
 
 def get_concept_dict(subject_id, lang):
-
+    """Get concept as python dictionary (json) according to subject and language (cs/en)"""
     varianta = query_to_dicts("""SELECT varianta, jazyk
                 FROM varianta
                 WHERE varianta.id_heslo = '%s'""" %subject_id)
@@ -196,6 +196,18 @@ def get_concept_dict(subject_id, lang):
                 FROM hierarchie
                 LEFT JOIN ekvivalence ON ekvivalence.id_heslo = hierarchie.nadrazeny
                 WHERE podrazeny = '%s'""" %subject_id)
+
+        nadrazene = []
+        nadrazeny = list(nadrazeny)
+        while nadrazeny:
+            nadrazene.append(nadrazeny[0])
+            nadrazeny = query_to_dicts("""SELECT nadrazeny,
+                ekvivalence.ekvivalent as heslo 
+                FROM hierarchie
+                LEFT JOIN ekvivalence ON ekvivalence.id_heslo = hierarchie.nadrazeny
+                WHERE podrazeny = '%s'""" %nadrazeny[0]["nadrazeny"])
+            nadrazeny = list(nadrazeny)
+        nadrazene.reverse()
     
         pribuzny = query_to_dicts("""SELECT pribuzny,
                 ekvivalence.ekvivalent as heslo
@@ -224,6 +236,18 @@ def get_concept_dict(subject_id, lang):
                 FROM hierarchie
                 LEFT JOIN hesla ON hesla.id_heslo = hierarchie.nadrazeny
                 WHERE podrazeny = '%s'""" %subject_id)
+
+        nadrazene = []
+        nadrazeny = list(nadrazeny)
+        while nadrazeny:
+            nadrazene.append(nadrazeny[0])
+            nadrazeny = query_to_dicts("""SELECT nadrazeny,
+                hesla.heslo 
+                FROM hierarchie
+                LEFT JOIN hesla ON hesla.id_heslo = hierarchie.nadrazeny
+                WHERE podrazeny = '%s'""" %nadrazeny[0]["nadrazeny"])
+            nadrazeny = list(nadrazeny)
+        nadrazene.reverse()
     
         pribuzny = query_to_dicts("""SELECT pribuzny,
                 hesla.heslo 
@@ -238,8 +262,9 @@ def get_concept_dict(subject_id, lang):
     if heslo:
         heslo = heslo[0]
 
-        for n in nadrazeny:
-            heslo["nadrazeny"] = [{"id_heslo":n["nadrazeny"], "heslo":n["heslo"]}]
+        heslo["nadrazene"] = [{"heslo": n["heslo"], "id_heslo": n["nadrazeny"]} for n in nadrazene]
+        if len(heslo["nadrazene"]):
+            heslo["nadrazeny"] = heslo["nadrazene"][-1]
 
         heslo["ekvivalent"] = list(ekvivalent)[0]["ekvivalent"]
 
@@ -264,6 +289,7 @@ def get_concept_dict(subject_id, lang):
     return heslo
 
 def normalize_counts(hesla):
+    """Normalize counts of records for tagcloud"""
     counts = [h["pocet"] for h in hesla]
     counts = list(set(counts))
     counts.sort(key=lambda x: int(x))
@@ -279,6 +305,7 @@ def normalize_counts(hesla):
 
 
 def get_exact_match(term, lang):
+    """Get precisely one exact match for concrete term in concrete language (cs/en), otherwise return False"""
     if lang == "cs":
         hesla = [h.id_heslo for h in Hesla.objects.filter(heslo__contains=term)]
     else:
@@ -293,7 +320,7 @@ def get_exact_match(term, lang):
 
 
 def get_concept_as_json(request, subject_id=None, lang="cs", callback=None):
-        """Get concept form database according to its PSH ID"""
+        """Get concept from database according to its PSH ID and language (cs/en)"""
         try:
             if request.GET.get("subject_id"):
                 subject_id = request.GET.get("subject_id")
@@ -314,6 +341,7 @@ def get_concept_as_json(request, subject_id=None, lang="cs", callback=None):
             return HttpResponse(json.dumps(heslo), mimetype='application/json')
 
 def get_czech_equivalent(subject):
+    """Get czech equivalent for subject from database"""
     try:
         equivalent = query_to_dicts("""SELECT heslo FROM hesla
                                         JOIN ekvivalence on ekvivalence.id_heslo = hesla.id_heslo
@@ -323,6 +351,7 @@ def get_czech_equivalent(subject):
         print str(e)
 
 def get_library_records(request):
+    """Get library records for concrete subject in concrete language (cs/en) and return HTML part with result"""
     try:
         subject = request.GET["subject"]
         lang = request.GET["lang"]
@@ -339,7 +368,7 @@ def get_library_records(request):
         catalogue_html = catalogue.read()
 
         if "nenalezlo žádné výsledky" in catalogue_html:
-            records_html = ["<div id='catalogue_header'>Nebyl nalezen žádný záznam.  <a href='", url,"'>Přejít do katalogu NTK >></a></div>"]
+            records_html = ["<div id='catalogue_header'>Nebyl nalezen žádný záznam.  <a target=blank href='", url,"'>Přejít do katalogu NTK >></a></div>"]
             return HttpResponse("".join(records_html))
 
         record_count = re.search('class="yui-u first">(.*?)</div>', catalogue_html, re.S).group(1)
@@ -372,12 +401,12 @@ def get_library_records(request):
             records.append({"title":title, "link": link, "author":author, "author_link":author_link, "published":published})
 
         if lang == "en":
-            records_html = ["<div id='catalogue_header'>Records 1 - ", str(len(records))," from ", record_count,", <a href='", url,"'>Go to the catalogue of NTK >></a></div>"]
+            records_html = ["<div id='catalogue_header'>Records 1 - ", str(len(records))," from ", record_count,", <a target=blank href='", url,"'>Go to the catalogue of NTK >></a></div>"]
         else:
-            records_html = ["<div id='catalogue_header'>Záznamy 1 - ", str(len(records))," z celkem ", record_count,", <a href='", url,"'>Přejít do katalogu NTK >></a></div>"]
+            records_html = ["<div id='catalogue_header'>Záznamy 1 - ", str(len(records))," z celkem ", record_count,", <a target=blank href='", url,"'>Přejít do katalogu NTK >></a></div>"]
         records_html.append("<ul id='catalogue_records'>\n")
         for r in records:
-            records_html.append("".join(['<li><a class="record_title" target=blank href="', r["link"],'">', r["title"],' (', r["published"],')</a>, <a class="author" href="', r["author_link"],'">', r["author"],'</a></li>\n']))
+            records_html.append("".join(['<li><a class="record_title" target=blank href="', r["link"],'">', r["title"],' (', r["published"],')</a>, <a class="author" target=blank href="', r["author_link"],'">', r["author"],'</a></li>\n']))
 
         records_html.append("</ul>\n")
 

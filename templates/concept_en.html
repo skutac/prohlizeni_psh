@@ -20,9 +20,7 @@
         <div class="sublabel">Broader concept</div>
         <ul id="broader">
         {% if concept.nadrazeny %}
-            {% for heslo in concept.nadrazeny %}
-                <li class="clickable"><a href="/prohlizeni_psh/skos/{{heslo.id_heslo}}/en">{{ heslo.heslo }}</a></li>
-            {% endfor %}
+            <li class="clickable"><a href="/prohlizeni_psh/skos/{{concept.nadrazeny.id_heslo}}/en">{{ concept.nadrazeny.heslo }}</a></li>
         {% else %}
             <li class="clickable"><a href="/prohlizeni_psh/skos/en">Top concepts</a></li>
         {% endif %}
@@ -67,9 +65,9 @@
         {% endif %}
 
         <div id="functions">
-            <div id="skos" rel="#skos_format">Concept in SKOS format <sup><a href="http://en.wikipedia.org/wiki/Simple_Knowledge_Organization_System" target=blank>?</a></sup></div>
+            <div><span  id="skos" rel="#skos_format">Concept in SKOS format</span> <sup><a href="http://en.wikipedia.org/wiki/Simple_Knowledge_Organization_System" target=blank>?</a></sup></div>
 
-            <div id="semantic_tag" rel="#semantic_tag_format">Tag from controlled vocabulary <sup><a href="http://en.wikipedia.org/wiki/Simple_Knowledge_Organization_System" target=blank>?</a></sup></div>
+            <div><span id="semantic_tag" rel="#semantic_tag_format">Tag from controlled vocabulary</span> <sup><a href="http://en.wikipedia.org/wiki/Simple_Knowledge_Organization_System" target=blank>?</a></sup></div>
 
             <div><a href="http://www.techlib.cz/cs/katalogy-a-databaze/psh/navrh-noveho-hesla/" target=blank>New concept proposition <sup>></sup></a></div>
         </div>
@@ -77,6 +75,12 @@
     </div>
 
 <div id="concept" data-subject_id="{{ concept.id_heslo }}">
+    <div id="path"><a href="/prohlizeni_psh/skos/en">Top concepts</a>
+        {% for nadrazeny in concept.nadrazene %}
+            > <a href="/prohlizeni_psh/skos/{{nadrazeny.id_heslo}}/en">{{ nadrazeny.heslo }}</a>
+        {% endfor %}
+            > {{ concept.heslo }}
+    </div>
     <div id="concept_graph">
     {% if concept.podrazeny %}
         {% for heslo in concept.podrazeny %}
@@ -99,9 +103,9 @@
         <br>
         &nbsp;&nbsp;&lt;dc:identifier&gt;{{ concept.id_heslo }}&lt;/dc:identifier&gt;
         <br>
-        &nbsp;&nbsp;&lt;skos:prefLabel xml:lang="cs"&gt;{{ concept.heslo }}&lt;/skos:prefLabel&gt;
+        &nbsp;&nbsp;&lt;skos:prefLabel xml:lang="cs"&gt;{{ concept.ekvivalent }}&lt;/skos:prefLabel&gt;
         <br>
-        &nbsp;&nbsp;&lt;skos:prefLabel xml:lang="en"&gt;{{ concept.ekvivalent }}&lt;/skos:prefLabel&gt;
+        &nbsp;&nbsp;&lt;skos:prefLabel xml:lang="en"&gt;{{ concept.heslo }}&lt;/skos:prefLabel&gt;
         <br>
         {% for heslo in concept.nepreferovany.cs %}
                 &nbsp;&nbsp;&lt;skos:altLabel xml:lang="cs"&gt;{{heslo}}&lt;/skos:altLabel&gt;
