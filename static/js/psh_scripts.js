@@ -20,7 +20,7 @@ $(document).ready(function(){
     }
 
     $.ajax({
-      url: '/prohlizeni_psh/skos/get_library_records',
+      url: '/skos/get_library_records',
       type: 'GET',
       data: {subject:subject, lang:lang},
       success: function(records){
@@ -44,7 +44,7 @@ $(document).ready(function(){
             }
 
             $.ajax({type : "GET",
-                   url : "/prohlizeni_psh/skos/suggest",
+                   url : "/skos/suggest",
                    datatype: "json",
                    success: function(subjects){
                           $("#psh_suggest").autocomplete({source: subjects});},
