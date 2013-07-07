@@ -11,14 +11,14 @@
 		<td>
 			<ul class="search_result">
 				{% for heslo in preferred %}
-					<li><a href="/prohlizeni_psh/skos/{{ heslo.id_heslo }}/en">{% autoescape off %}{{ heslo.heslo }}{% endautoescape %}</a></li>
+					<li><a href="{{ heslo.id_heslo }}/en">{% autoescape off %}{{ heslo.heslo }}{% endautoescape %}</a></li>
 				{% endfor %}
 			</ul>
 		</td>
 		<td>
 			<ul class="search_result">
 				{% for heslo in nonpreferred %}
-					<li><a href="/prohlizeni_psh/skos/{{ heslo.id_heslo }}/en">{% autoescape off %}{{ heslo.varianta }} ({{ heslo.heslo }}){% endautoescape %}</a></li>
+					<li><a href="{{ heslo.id_heslo }}/en">{% autoescape off %}{{ heslo.varianta }} ({{ heslo.heslo }}){% endautoescape %}</a></li>
 				{% endfor %}
 			</ul>
 		</td>

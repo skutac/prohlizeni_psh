@@ -18,8 +18,8 @@ DATABASES = {
         'NAME': config.DB_NAME,                      # Or path to database file if using sqlite3.
         'USER': config.DB_USER,                      # Not used with sqlite3.
         'PASSWORD': config.DB_PASSWORD,                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
+        'HOST': 'ftp1.ntkcz.cz',                      # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '3306',                      # Set to empty string for default. Not used with sqlite3.
     }
 }
 

@@ -7,7 +7,7 @@
 
         <div class="sublabel">URI: <a id="uri" href="http://psh.ntkcz.cz/skos/{{ concept.id_heslo }}">http://psh.ntkcz.cz/skos/{{ concept.id_heslo }}</a></div>
 
-       <div class="sublabel">Anglický ekvivalent: <span id="equivalent"><a href="/prohlizeni_psh/skos/{{concept.id_heslo}}/en">{{ concept.ekvivalent }}</a></span></div>
+       <div class="sublabel">Anglický ekvivalent: <span id="equivalent"><a href="/skos/{{concept.id_heslo}}/en">{{ concept.ekvivalent }}</a></span></div>
         
         {% if concept.nepreferovany.cs %}
         <div class="sublabel">Nepreferovaná znění</div>
@@ -23,7 +23,7 @@
         {% if concept.nadrazeny %}
             <li class="clickable"><a href="{{concept.nadrazeny.id_heslo}}">{{ concept.nadrazeny.heslo }}</a></li>
         {% else %}
-            <li class="clickable"><a href="/prohlizeni_psh/skos/">Hlavní hesla</a></li>
+            <li class="clickable"><a href="/skos/">Hlavní hesla</a></li>
         {% endif %}
         </ul>
         
@@ -78,9 +78,9 @@
 <!-- </div> -->
 
 <div id="concept" data-subject_id="{{ concept.id_heslo }}">
-    <div id="path"><a href="/prohlizeni_psh/skos">Hlavní hesla</a>
+    <div id="path"><a href="/skos">Hlavní hesla</a>
         {% for nadrazeny in concept.nadrazene %}
-            > <a href="/prohlizeni_psh/skos/{{nadrazeny.id_heslo}}">{{ nadrazeny.heslo }}</a>
+            > <a href="/skos/{{nadrazeny.id_heslo}}">{{ nadrazeny.heslo }}</a>
         {% endfor %}
             > {{ concept.heslo }}
     </div>
