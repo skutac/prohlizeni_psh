@@ -58,6 +58,12 @@ $(document).ready(function(){
 
     $("#skos[rel]").overlay();
     $("#semantic_tag[rel]").overlay({left:"center", fixed:false});
+
+    // $("#skos").click(function(){
+    //   // $("#skos_format").dialog({modal:false, width: "auto", position: "center", resizable: false, show: "fade", stack: false});
+    //   $("#skos_format").show();
+    //   $("#skos_format").dialog({modal:false, width: "auto", position: "center", resizable: false, show: "fade", stack: false});
+    // });
 });
 
 function getSuggestedSubject(subject){

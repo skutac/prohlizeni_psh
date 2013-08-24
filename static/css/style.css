@@ -28,7 +28,7 @@ margin-top: 90px;
 }
 
 #concept{
-margin-left: 30%;
+margin-left: 400px;
 margin-top: 15px;
 }
 
@@ -174,6 +174,11 @@ border-radius: 15px;
   padding-top: 15px;
   padding-bottom: 15px;
   margin-bottom: 15px;
+  width: 30%;
+  max-width: 350px;
+  padding-right: 20px;
+  padding-left: 20px;
+  float: left;
 }
 
 #left_nav ul a, #nonprefered li, .search_result a, #footer{
@@ -187,13 +192,6 @@ border-radius: 15px;
 #left_nav ul a:hover{
   cursor: pointer;
   font-weight: bold;
-}
-
-#left_nav{
-width: 350px;
-padding-right: 20px;
-padding-left: 20px;
-float: left;
 }
 
 #functions{
