@@ -27,6 +27,22 @@ def query_to_dicts(query_string, *query_args):
         yield row_dict
     return
 
+def tagcloud_test(request):
+    """Returns main site in czech"""
+    hesla = query_to_dicts("""SELECT topconcepts.id_heslo, hesla.heslo, psh_pocetzaznamu.pocet FROM topconcepts
+                                JOIN hesla ON hesla.id_heslo = topconcepts.id_heslo
+                                JOIN psh_pocetzaznamu ON psh_pocetzaznamu.id_heslo = topconcepts.id_heslo""")
+    hesla = list(hesla)
+    hesla = normalize_counts(hesla)
+    hesla.sort(key=lambda x: x["heslo"])
+    nav = {"lang":"cs" ,"search_label": "Vyhledávání", "english":"inactive", "czech":"active"}
+    heslo2pocet = {}
+
+    for h in hesla:
+        heslo2pocet[h["heslo"]] = h["pocet"]
+
+    return render_to_response("tagcloud.html", {"hesla":hesla, "nav": nav, "heslo2pocet": json.dumps(heslo2pocet)})
+
 def index(request):
    """Returns main site in czech"""
    hesla = query_to_dicts("""SELECT topconcepts.id_heslo, hesla.heslo, psh_pocetzaznamu.pocet FROM topconcepts

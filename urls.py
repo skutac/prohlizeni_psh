@@ -18,6 +18,7 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
     (r'^skos/$', 'views.index'),
+    (r'^skos/tagcloud$', 'views.tagcloud_test'),
     (r'^skos/en$', 'views.index_en'),
     (r'^skos/(?P<subject_id>PSH\d+)$', 'views.get_concept'),
     (r'^skos/(?P<subject_id>PSH\d+)/en$', 'views.get_concept_en'),
@@ -30,7 +31,6 @@ urlpatterns = patterns('',
 )
 
 # urlpatterns = patterns('',
-#     # Examples:jo
 #     # url(r'^$', 'prohlizeni_psh.views.home', name='home'),
 #     # url(r'^prohlizeni_psh/', include('prohlizeni_psh.foo.urls')),
 
