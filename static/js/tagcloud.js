@@ -96,15 +96,16 @@ Tagcloud.prototype.draw = function(){
     		row_length = row_length + tags[i].children[j].getWidth();
     		console.log(tags[i].children[j].getWidth())
     		row.push(tags[i].children[j]);
-    	}
-    	if(row_length > this.settings.width){
-    		console.log(row_length);
-    		row = [tags[i].children[j]];
-    		row_length = tags[i].children[j].getWidth();
+
+            if(row_length > this.settings.width){
+                row = [tags[i].children[j]];
+                console.log(row);
+                row_length = row[0].getWidth();
+            }
     	}
     }
 
-    // this.tagcloud_layer.draw();
+    this.tagcloud_layer.draw();
 }
 
 Tagcloud.prototype.draw_tag = function(tag, font_size){
