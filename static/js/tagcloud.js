@@ -7,7 +7,8 @@ function Tagcloud(element_id, user_settings){
         "width": element_width,
         "color_scale": "Blues",
         "class_count": 10,
-        "font": "Trebuchet MS",
+        "font": "Ubuntu",
+        "tag_break_width": 5,
         "colors" :{
             "YlGn": {"start": {"r":255, "g": 255, "b": 204}, "end": {"r": 35, "g": 132, "b": 67}},
             "YlGnBu": {"start": {"r":255, "g": 255, "b": 204}, "end": {"r": 34, "g": 94, "b": 168}},
@@ -43,6 +44,7 @@ function Tagcloud(element_id, user_settings){
 
     this.text_ref = new Kinetic.Text({
     	fontFamily: this.settings.font,
+        fontStyle: "bold",
     });
 }
 
@@ -71,12 +73,12 @@ Tagcloud.prototype.calculate_font_size = function(data){
 }
 
 Tagcloud.prototype.draw = function(){
-	var i, j, tag, tags = [];
+	var i, j, tag;
+    this.tags = [];
 
 	this.stage = new Kinetic.Stage({
         container: this.settings.element_id,
         width: this.settings.width,
-        height: 1000,
     });
 
     this.tagcloud_layer = new Kinetic.Layer();
@@ -84,28 +86,68 @@ Tagcloud.prototype.draw = function(){
 
     for(i in this.tag2font_size){
     	tag = this.draw_tag(i, this.tag2font_size[i]);
-    	tags.push(tag);
+    	this.tags.push(tag);
     }
 
-    var row = [];
-    var row_length = 0;
-    var tag_width;
+    var row = [], indexes = [], row_length = 0, tag_width, max_height = 0, height, top_margin = 0;
 
-    for(i = 0; i<tags.length; i++){
-    	for(j = 0; j<tags[i].children.length; j++){
-    		row_length = row_length + tags[i].children[j].getWidth();
-    		console.log(tags[i].children[j].getWidth())
-    		row.push(tags[i].children[j]);
+    for(i = 0; i<this.tags.length; i++){
+    	for(j = 0; j<this.tags[i].children.length; j++){
+            indexes = [i, j];
+            tag_width = this.tags[i].children[j].getWidth();
+            height = this.tags[i].children[j].getHeight();
 
-            if(row_length > this.settings.width){
-                row = [tags[i].children[j]];
-                console.log(row);
-                row_length = row[0].getWidth();
+            if(row_length + tag_width > this.settings.width){
+                this.set_coordinates(row, row_length, max_height, top_margin);
+                row = [indexes];
+                top_margin = top_margin + max_height;
+                max_height = 0;
+                row_length = tag_width;
+            }
+            else{
+                row_length = row_length + tag_width + this.settings.tag_break_width;
+                row.push(indexes);
+            }
+
+            if(height > max_height){
+                    max_height = height;
             }
     	}
     }
 
+    this.set_coordinates(row, row_length, max_height, top_margin);
+    top_margin = top_margin + max_height + this.settings.max_font_size;
+    this.stage.setHeight(top_margin);
+
+    for(i = 0; i<this.tags.length; i++){
+        this.tagcloud_layer.add(this.tags[i]);
+    }
     this.tagcloud_layer.draw();
+
+    var self = this;
+    this.tagcloud_layer.on("mouseover", function(evt){
+        evt.targetNode.parent.setOpacity(0.8);
+        this.draw();
+    })
+
+    this.tagcloud_layer.on("mouseout", function(evt){
+        evt.targetNode.parent.setOpacity(1);
+        this.draw();
+    })
+}
+
+Tagcloud.prototype.set_coordinates = function(tag_indexes, row_length, max_height, top_margin){
+    var i, height;
+    var x = this.hack_round((this.settings.width - row_length)/2);
+    var y = max_height + top_margin;
+    var font_size;
+    
+    for(i = 0; i < tag_indexes.length; i++){
+        font_size = this.tags[tag_indexes[i][0]].children[tag_indexes[i][1]].getFontSize();
+        this.tags[tag_indexes[i][0]].children[tag_indexes[i][1]].setPosition(x, y + (max_height - font_size));
+        x = x + this.tags[tag_indexes[i][0]].children[tag_indexes[i][1]].getWidth() + this.settings.tag_break_width;
+    }
+    return;
 }
 
 Tagcloud.prototype.draw_tag = function(tag, font_size){
