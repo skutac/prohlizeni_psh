@@ -65,7 +65,7 @@ Tagcloud.prototype.calculate_font_size = function(data){
     if(values.length > 1){
         this.min_value = Math.min.apply(null, values);
         this.max_value = Math.max.apply(null, values);
-        console.log(this.min_value, this.max_value)
+        
         var numbers_extent = this.max_value - this.min_value;
         var class_font_size = (this.settings.max_font_size - this.settings.min_font_size)/this.settings.class_count;
         var class_size = numbers_extent/this.settings.class_count;
@@ -133,7 +133,6 @@ Tagcloud.prototype.draw = function(){
         this.tagcloud_layer.add(this.tags[i]);
     }
     this.tagcloud_layer.draw();
-    console.log(this.tags);
 
     var self = this;
     this.tagcloud_layer.on("mouseover", function(evt){
