@@ -11,10 +11,6 @@
     </div>
 
     <div id="concept">
-        <div id="concept_graph">
-            {% for heslo in hesla %}
-                    <a href="/skos/{{heslo.id_heslo}}/en" rel="{{ heslo.pocet }}">{{ heslo.ekvivalent }}</a>
-            {% endfor %}
-        </div>
+        <div id="concept_graph"></div>
     </div>
 {% endblock %}

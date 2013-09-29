@@ -27,22 +27,6 @@ def query_to_dicts(query_string, *query_args):
         yield row_dict
     return
 
-def tagcloud_test(request):
-    """Returns main site in czech"""
-    hesla = query_to_dicts("""SELECT topconcepts.id_heslo, hesla.heslo, psh_pocetzaznamu.pocet FROM topconcepts
-                                JOIN hesla ON hesla.id_heslo = topconcepts.id_heslo
-                                JOIN psh_pocetzaznamu ON psh_pocetzaznamu.id_heslo = topconcepts.id_heslo""")
-    hesla = list(hesla)
-    hesla = normalize_counts(hesla)
-    hesla.sort(key=lambda x: x["heslo"])
-    nav = {"lang":"cs" ,"search_label": "Vyhledávání", "english":"inactive", "czech":"active"}
-    heslo2pocet = {}
-
-    for h in hesla:
-        heslo2pocet[h["heslo"]] = h["pocet"]
-
-    return render_to_response("tagcloud.html", {"hesla":hesla, "nav": nav, "heslo2pocet": json.dumps(heslo2pocet)})
-
 def index(request):
    """Returns main site in czech"""
    hesla = query_to_dicts("""SELECT topconcepts.id_heslo, hesla.heslo, psh_pocetzaznamu.pocet FROM topconcepts
@@ -51,8 +35,15 @@ def index(request):
    hesla = list(hesla)
    hesla = normalize_counts(hesla)
    hesla.sort(key=lambda x: x["heslo"])
+   heslo2pocet = {}
+   heslo2link = {}
+
+   for h in hesla:
+        heslo2pocet[h["heslo"]] = h["pocet"]
+        heslo2link[h["heslo"]] = h["id_heslo"]
+
    nav = {"lang":"cs" ,"search_label": "Vyhledávání", "english":"inactive", "czech":"active"}
-   return render_to_response("index.html", {"hesla":hesla, "nav": nav})
+   return render_to_response("index.html", {"hesla":hesla, "nav": nav, "heslo2pocet": json.dumps(heslo2pocet), "heslo2link": json.dumps(heslo2link)})
 
 def index_en(request):
    """Returns main site in english"""
@@ -62,8 +53,15 @@ def index_en(request):
    hesla = list(hesla)
    hesla = normalize_counts(hesla)
    hesla.sort(key=lambda x: x["ekvivalent"])
+   heslo2pocet = {}
+   heslo2link = {}
+   
+   for h in hesla:
+        heslo2pocet[h["ekvivalent"]] = h["pocet"]
+        heslo2link[h["ekvivalent"]] = "/".join([h["id_heslo"], "en"])
+
    nav = {"lang":"en" ,"search_label": "Search", "english":"active", "czech":"inactive"}
-   return render_to_response("index_en.html", {"hesla":hesla, "nav":nav})
+   return render_to_response("index_en.html", {"hesla":hesla, "nav":nav, "heslo2pocet": json.dumps(heslo2pocet), "heslo2link": json.dumps(heslo2link)})
     
 def suggest(request):
     """Return suggested labels according to given text input and language (en/cs)"""
@@ -116,9 +114,10 @@ def search(request):
     exact_match = get_exact_match(term,lang)
     if exact_match:
         if lang == "cs":
-            return get_concept("", exact_match)
+            request.path = exact_match
         else:
-            return get_concept_en("", exact_match)
+            request.path = "/en"
+        return get_concept(request, exact_match)
 
     if lang == "cs":
         subjects = Hesla.objects.filter(heslo__istartswith = term).order_by("heslo")
@@ -168,16 +167,37 @@ def bold(substring, text):
     return re.sub(substring, "".join(["<b>", substring, "</b>"]), text)
 
 def get_concept(request, subject_id):
-    """Interface for subject retrieval in czech"""
-    nav = {"lang":"cs" ,"search_label": "Vyhledávání", "english":"inactive", "czech":"active"}
-    return render_to_response("concept.html", {"concept": get_concept_dict(subject_id, "cs"), "nav": nav})
-
-def get_concept_en(request, subject_id):
     """Interface for subject retrieval in english"""
-    nav = {"lang":"en" ,"search_label": "Search", "english":"active", "czech":"inactive"}
-    return render_to_response("concept_en.html", {"concept": get_concept_dict(subject_id, "en"), "nav": nav})
+    lang = request.path.split("/")[-1]
 
-def get_concept_dict(subject_id, lang):
+    nav_switch = {"en": {"lang":"en" ,"search_label": "Search", "english":"active", "czech":"inactive"},
+           "cs": {"lang":"cs" ,"search_label": "Vyhledávání", "english":"inactive", "czech":"active"}}
+
+    if lang == "en":
+        nav = nav_switch[lang]
+        concept = get_concept_dict(subject_id, "en")
+        template = "concept_en.html"
+        url_part = "/en"
+    else:
+        nav = nav_switch["cs"]
+        concept = get_concept_dict(subject_id)
+        template = "concept.html"
+        url_part = ""
+
+    heslo2pocet = {}
+    heslo2link = {}
+   
+    if concept["podrazeny"]:
+        for h in concept["podrazeny"]:
+            heslo2pocet[h["heslo"]] = h["pocet"]
+            heslo2link[h["heslo"]] = "".join(["/skos/", h["id_heslo"], url_part])
+    else:
+        heslo2pocet[concept["heslo"]] = 0
+
+
+    return render_to_response(template, {"concept": concept, "nav": nav, "heslo2pocet": json.dumps(heslo2pocet), "heslo2link": json.dumps(heslo2link)})
+
+def get_concept_dict(subject_id, lang="cs"):
     """Get concept as python dictionary (json) according to subject and language (cs/en)"""
     varianta = query_to_dicts("""SELECT varianta, jazyk
                 FROM varianta

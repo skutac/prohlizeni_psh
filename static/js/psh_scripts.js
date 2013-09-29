@@ -3,13 +3,7 @@ var screenheight = screen.height;
 
 $(document).ready(function(){
     $('#scrollDiv, #scrollable').css('height', (screenheight-200));
-    
-
-    $('#concept_graph a').tagcloud({
-      size: {start: 30, end: 60, unit: "px"}, 
-      color: {start: '#689AD3', end: '#071871'}
-    });
-    
+       
     var subject = $("#heslo").text();
     var lang;
     if($("#czech").attr("class") == "active"){

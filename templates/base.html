@@ -10,12 +10,12 @@
     <script type="text/javascript" src="/static/js/jquery.ui.button.min.js"></script>
     <script type="text/javascript" src="/static/js/jquery.ui.dialog.min.js"></script>
     <script type="text/javascript" src="/static/js/jquery-ui-1.9.2.custom.min.js"></script>
-    <script type="text/javascript" src="/static/js/jquery.tagcloud.js"></script>
     <script type="text/javascript" src="/static/js/jquery.tools.min.js"></script>
     <script type="text/javascript" src="/static/js/psh_scripts.js"></script>
+    <script type="text/javascript" src="/static/js/kinetic-v4.7.0.min.js"></script>
+<script type="text/javascript" src="/static/js/tagcloud.js"></script>
 </head>
-<script type="text/javascript">
-</script>
+
 
 <body>
     <div id="nav">
@@ -41,6 +41,29 @@
     <div id="content">
         {% block content %}{% endblock %}
     </div>
+
+    <script type="text/javascript">
+        var tag = [], i, link;
+        var data = {% autoescape off %}{{ heslo2pocet }}{% endautoescape %};
+        var heslo2link = {% autoescape off %}{{ heslo2link }}{% endautoescape %};
+        var tagcloud = new Tagcloud("concept_graph", {"font": "Ubuntu", "color_scale": "Blues", "max_font_size": 48, "min_font_size": 16});
+        tagcloud.read_data(data);
+
+        tagcloud.settings.onclick = function(evt){
+
+            for(i = 0; i < evt.targetNode.parent.children.length; i++){
+                tag.push(evt.targetNode.parent.children[i].partialText);
+            }
+            tag = tag.join(" ");
+            console.log(heslo2link[tag])
+            link = heslo2link[tag];
+
+            if(typeof link != "undefined"){
+                location.href = link;
+            }
+        }
+        tagcloud.draw();
+    </script>
 
     <div id="footer" about="" instanceof="cc:work" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
         <div id"cc_logo">

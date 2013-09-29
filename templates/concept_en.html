@@ -82,13 +82,13 @@
             > {{ concept.heslo }}
     </div>
     <div id="concept_graph">
-    {% if concept.podrazeny %}
+    <!-- {% if concept.podrazeny %}
         {% for heslo in concept.podrazeny %}
                 <a href="/skos/{{heslo.id_heslo}}/en" rel="{{ heslo.pocet }}">{{ heslo.heslo }}</a>
         {% endfor %}
     {% else %}
         <div id="bottom_subject">{{ concept.heslo }}</div>
-    {% endif %}
+    {% endif %} -->
     </div>
     <div id="catalogue">
         <div class="title">Catalogue of National technical library<span><img id="loading" src="/static/img/loading.gif" /></span></div>

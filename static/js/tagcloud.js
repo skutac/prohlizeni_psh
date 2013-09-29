@@ -7,9 +7,12 @@ function Tagcloud(element_id, user_settings){
         "width": element_width,
         "color_scale": "Blues",
         "class_count": 10,
-        "font": "Ubuntu",
+        "font": "Trebuchet MS",
         "tag_break_width": 5,
-        "colors" :{
+        "onclick": function(evt){},
+    };
+
+    this.color_scales = {
             "YlGn": {"start": {"r":255, "g": 255, "b": 204}, "end": {"r": 35, "g": 132, "b": 67}},
             "YlGnBu": {"start": {"r":255, "g": 255, "b": 204}, "end": {"r": 34, "g": 94, "b": 168}},
             "GnBu": {"start": {"r":240, "g": 249, "b": 232}, "end": {"r": 43, "g": 140, "b": 190}},
@@ -37,7 +40,6 @@ function Tagcloud(element_id, user_settings){
             "RdYlBu": {"start": {"r":215, "g": 25, "b": 28}, "end": {"r": 44, "g": 123, "b": 182}},
             "Spectral": {"start": {"r":215, "g": 25, "b": 28}, "end": {"r": 43, "g": 131, "b": 186}},
             "RdYlGn": {"start": {"r":215, "g": 25, "b": 28}, "end": {"r": 26, "g": 150, "b": 65}},
-        },
     };
 
     $.extend(this.settings, user_settings);
@@ -60,15 +62,23 @@ Tagcloud.prototype.calculate_font_size = function(data){
 		values.push(data[i]);
 	};
 
-	this.min_value = Math.min.apply(null, values);
-	this.max_value = Math.max.apply(null, values);
-	var numbers_extent = this.max_value - this.min_value;
-	var class_font_size = (this.settings.max_font_size - this.settings.min_font_size)/this.settings.class_count;
-	var class_size = numbers_extent/this.settings.class_count;
+    if(values.length > 1){
+        this.min_value = Math.min.apply(null, values);
+        this.max_value = Math.max.apply(null, values);
+        console.log(this.min_value, this.max_value)
+        var numbers_extent = this.max_value - this.min_value;
+        var class_font_size = (this.settings.max_font_size - this.settings.min_font_size)/this.settings.class_count;
+        var class_size = numbers_extent/this.settings.class_count;
 
-	for(i in data){
-		tag2font_size[i] = this.hack_round(this.settings.min_font_size + (data[i] - this.min_value)/class_size*class_font_size);
-	};
+        for(i in data){
+            tag2font_size[i] = this.hack_round(this.settings.min_font_size + (data[i] - this.min_value)/class_size*class_font_size);
+        };
+    }
+    else{
+        for(i in data){
+            tag2font_size[i] = this.hack_round((this.settings.min_font_size + this.settings.max_font_size)/2);
+        };
+    }
 	return tag2font_size;
 }
 
@@ -123,16 +133,23 @@ Tagcloud.prototype.draw = function(){
         this.tagcloud_layer.add(this.tags[i]);
     }
     this.tagcloud_layer.draw();
+    console.log(this.tags);
 
     var self = this;
     this.tagcloud_layer.on("mouseover", function(evt){
-        evt.targetNode.parent.setOpacity(0.8);
+        var tag_group = evt.targetNode.parent;
+        tag_group.setOpacity(0.8);
         this.draw();
     })
 
     this.tagcloud_layer.on("mouseout", function(evt){
-        evt.targetNode.parent.setOpacity(1);
+        var tag_group = evt.targetNode.parent;
+        tag_group.setOpacity(1);
         this.draw();
+    })
+
+    this.tagcloud_layer.on("click", function(evt){
+        self.settings.onclick(evt);
     })
 }
 
@@ -144,7 +161,7 @@ Tagcloud.prototype.set_coordinates = function(tag_indexes, row_length, max_heigh
     
     for(i = 0; i < tag_indexes.length; i++){
         font_size = this.tags[tag_indexes[i][0]].children[tag_indexes[i][1]].getFontSize();
-        this.tags[tag_indexes[i][0]].children[tag_indexes[i][1]].setPosition(x, y + (max_height - font_size));
+        this.tags[tag_indexes[i][0]].children[tag_indexes[i][1]].setPosition(x, y - 0.5*font_size);
         x = x + this.tags[tag_indexes[i][0]].children[tag_indexes[i][1]].getWidth() + this.settings.tag_break_width;
     }
     return;
@@ -174,7 +191,7 @@ Tagcloud.prototype.hack_round = function(value){
 }
 
 Tagcloud.prototype.get_color_for_value = function(value, min, max, color_scale){
-    var color = this.settings.colors[color_scale];
+    var color = this.color_scales[color_scale];
 
     var r1 = color["end"]["r"];
     var g1 = color["end"]["g"];

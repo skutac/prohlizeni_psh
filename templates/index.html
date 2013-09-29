@@ -10,10 +10,6 @@
         </ul>
     </div>
 <div id="concept">
-    <div id="concept_graph">
-        {% for heslo in hesla %}
-                <a href="{{heslo.id_heslo}}" rel="{{ heslo.pocet }}">{{ heslo.heslo }}</a>
-        {% endfor %}
-    </div>
+    <div id="concept_graph"></div>
 </div>
 {% endblock %}

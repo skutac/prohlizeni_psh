@@ -21,7 +21,7 @@ urlpatterns = patterns('',
     (r'^skos/tagcloud$', 'views.tagcloud_test'),
     (r'^skos/en$', 'views.index_en'),
     (r'^skos/(?P<subject_id>PSH\d+)$', 'views.get_concept'),
-    (r'^skos/(?P<subject_id>PSH\d+)/en$', 'views.get_concept_en'),
+    (r'^skos/(?P<subject_id>PSH\d+)/en$', 'views.get_concept'),
     (r'^skos/search$', 'views.search'),
     # (r'^getjson$', 'views.get_concept_as_json'),
     # (r'^get_subject_id$', 'views.get_subject_id'),
@@ -29,24 +29,3 @@ urlpatterns = patterns('',
     (r'^skos/suggest$', 'views.suggest'),
     (r'^skos/get_library_records$', 'views.get_library_records'),
 )
-
-# urlpatterns = patterns('',
-#     # url(r'^$', 'prohlizeni_psh.views.home', name='home'),
-#     # url(r'^prohlizeni_psh/', include('prohlizeni_psh.foo.urls')),
-
-#     # Uncomment the admin/doc line below to enable admin documentation:
-#     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-
-#     # Uncomment the next line to enable the admin:
-#     url(r'^admin/', include(admin.site.urls)),
-#     (r'^prohlizeni_psh/skos/$', 'views.index'),
-#     (r'^prohlizeni_psh/skos/en$', 'views.index_en'),
-#     (r'^prohlizeni_psh/skos/(?P<subject_id>PSH\d+)$', 'views.get_concept'),
-#     (r'^prohlizeni_psh/skos/(?P<subject_id>PSH\d+)/en$', 'views.get_concept_en'),
-#     (r'^prohlizeni_psh/skos/search$', 'views.search'),
-#     # (r'^getjson$', 'views.get_concept_as_json'),
-#     # (r'^get_subject_id$', 'views.get_subject_id'),
-#     (r'^static/(?P<path>.*)$', 'django.views.static.serve', {'document_root': os.path.join(settings.ROOT, 'static').replace('\\','/')}),
-#     (r'^prohlizeni_psh/skos/suggest$', 'views.suggest'),
-#     (r'^prohlizeni_psh/skos/get_library_records$', 'views.get_library_records'),
-# )
