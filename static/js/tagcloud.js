@@ -13,6 +13,7 @@ function Tagcloud(element_id, user_settings){
     };
 
     this.color_scales = {
+            "Blues": {"start": {"r":239, "g": 243, "b": 255}, "end": {"r": 33, "g": 113, "b": 181}},
             "YlGn": {"start": {"r":255, "g": 255, "b": 204}, "end": {"r": 35, "g": 132, "b": 67}},
             "YlGnBu": {"start": {"r":255, "g": 255, "b": 204}, "end": {"r": 34, "g": 94, "b": 168}},
             "GnBu": {"start": {"r":240, "g": 249, "b": 232}, "end": {"r": 43, "g": 140, "b": 190}},
@@ -26,7 +27,6 @@ function Tagcloud(element_id, user_settings){
             "YlOrR": {"start": {"r":255, "g": 255, "b": 178}, "end": {"r": 227, "g": 26, "b": 28}},
             "YlOrB": {"start": {"r":255, "g": 255, "b": 212}, "end": {"r": 204, "g": 76, "b": 2}},
             "Purples2": {"start": {"r":242, "g": 240, "b": 247}, "end": {"r": 106, "g": 81, "b": 163}},
-            "Blues": {"start": {"r":239, "g": 243, "b": 255}, "end": {"r": 33, "g": 113, "b": 181}},
             "Greens": {"start": {"r":237, "g": 248, "b": 233}, "end": {"r": 35, "g": 139, "b": 69}},
             "Oranges": {"start": {"r":254, "g": 237, "b": 222}, "end": {"r": 217, "g": 71, "b": 1}},
             "Reds": {"start": {"r":254, "g": 229, "b": 217}, "end": {"r": 203, "g": 24, "b": 29}},
@@ -62,11 +62,12 @@ Tagcloud.prototype.calculate_font_size = function(data){
 		values.push(data[i]);
 	};
 
-    if(values.length > 1){
-        this.min_value = Math.min.apply(null, values);
-        this.max_value = Math.max.apply(null, values);
+    this.min_value = Math.min.apply(null, values);
+    this.max_value = Math.max.apply(null, values);
         
-        var numbers_extent = this.max_value - this.min_value;
+    var numbers_extent = this.max_value - this.min_value;
+
+    if(values.length > 1 && numbers_extent > 0){
         var class_font_size = (this.settings.max_font_size - this.settings.min_font_size)/this.settings.class_count;
         var class_size = numbers_extent/this.settings.class_count;
 
@@ -136,12 +137,14 @@ Tagcloud.prototype.draw = function(){
 
     var self = this;
     this.tagcloud_layer.on("mouseover", function(evt){
+        document.body.style.cursor = 'pointer';
         var tag_group = evt.targetNode.parent;
         tag_group.setOpacity(0.8);
         this.draw();
     })
 
     this.tagcloud_layer.on("mouseout", function(evt){
+        document.body.style.cursor = 'default';
         var tag_group = evt.targetNode.parent;
         tag_group.setOpacity(1);
         this.draw();

@@ -46,7 +46,8 @@
         var tag = [], i, link;
         var data = {% autoescape off %}{{ heslo2pocet }}{% endautoescape %};
         var heslo2link = {% autoescape off %}{{ heslo2link }}{% endautoescape %};
-        var tagcloud = new Tagcloud("concept_graph", {"font": "Ubuntu", "color_scale": "Blues", "max_font_size": 48, "min_font_size": 16});
+        var tagcloud = new Tagcloud("concept_graph", {"font": "Trebuchet MS", "color_scale": "Blues", "max_font_size": 48, "min_font_size": 16});
+        tagcloud.color_scales["Blues"] = {"start": {"r":198, "g": 217, "b": 240}, "end": {"r": 33, "g": 113, "b": 181}},
         tagcloud.read_data(data);
 
         tagcloud.settings.onclick = function(evt){
