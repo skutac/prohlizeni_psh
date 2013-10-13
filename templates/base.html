@@ -3,7 +3,7 @@
 <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8"/>
     <title>Prohlížení PSH</title>
-    <!-- <link href='http://fonts.googleapis.com/css?family=Ubuntu:400,700,400italic,700italic&subset=latin,latin-ext' rel='stylesheet' type='text/css'> -->
+    <link href='http://fonts.googleapis.com/css?family=Rambla&subset=latin,latin-ext' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" href="/static/css/style.css" type="text/css" />
     <script type="text/javascript" src="/static/js/jquery.min.js"></script>
     <script type="text/javascript" src="/static/js/jquery.ui.widget.min.js"></script>
@@ -43,26 +43,28 @@
     </div>
 
     <script type="text/javascript">
-        var tag = [], i, link;
-        var data = {% autoescape off %}{{ heslo2pocet }}{% endautoescape %};
-        var heslo2link = {% autoescape off %}{{ heslo2link }}{% endautoescape %};
-        var tagcloud = new Tagcloud("concept_graph", {"font": "Trebuchet MS", "color_scale": "Blues", "max_font_size": 48, "min_font_size": 16});
-        tagcloud.color_scales["Blues"] = {"start": {"r":198, "g": 217, "b": 240}, "end": {"r": 33, "g": 113, "b": 181}},
-        tagcloud.read_data(data);
+        $(document).ready(function(){
+            var tag = [], i, link;
+            var data = {% autoescape off %}{{ heslo2pocet }}{% endautoescape %};
+            var heslo2link = {% autoescape off %}{{ heslo2link }}{% endautoescape %};
+            var tagcloud = new Tagcloud("concept_graph", {"font": "Ubuntu", "color_scale": "Blues", "max_font_size": 54, "min_font_size": 22});
+            tagcloud.color_scales["Blues"] = {"start": {"r":198, "g": 217, "b": 240}, "end": {"r": 33, "g": 113, "b": 181}},
+            tagcloud.read_data(data);
 
-        tagcloud.settings.onclick = function(evt){
+            tagcloud.settings.onclick = function(evt){
 
-            for(i = 0; i < evt.targetNode.parent.children.length; i++){
-                tag.push(evt.targetNode.parent.children[i].partialText);
+                for(i = 0; i < evt.targetNode.parent.children.length; i++){
+                    tag.push(evt.targetNode.parent.children[i].partialText);
+                }
+                tag = tag.join(" ");
+                link = heslo2link[tag];
+
+                if(typeof link != "undefined"){
+                    location.href = link;
+                }
             }
-            tag = tag.join(" ");
-            link = heslo2link[tag];
-
-            if(typeof link != "undefined"){
-                location.href = link;
-            }
-        }
-        tagcloud.draw();
+            tagcloud.draw();
+        });
     </script>
 
     <div id="footer" about="" instanceof="cc:work" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">

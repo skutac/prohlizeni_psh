@@ -9,6 +9,8 @@ function Tagcloud(element_id, user_settings){
         "class_count": 10,
         "font": "Trebuchet MS",
         "tag_break_width": 5,
+        "label_color": "grey",
+        "header_height": 50,
         "onclick": function(evt){},
     };
 
@@ -95,6 +97,9 @@ Tagcloud.prototype.draw = function(){
     this.tagcloud_layer = new Kinetic.Layer();
     this.stage.add(this.tagcloud_layer);
 
+    this.tagcloud_label_layer = new Kinetic.Layer();
+    this.stage.add(this.tagcloud_label_layer);
+
     for(i in this.tag2font_size){
     	tag = this.draw_tag(i, this.tag2font_size[i]);
     	this.tags.push(tag);
@@ -128,7 +133,7 @@ Tagcloud.prototype.draw = function(){
 
     this.set_coordinates(row, row_length, max_height, top_margin);
     top_margin = top_margin + max_height + this.settings.max_font_size;
-    this.stage.setHeight(top_margin);
+    this.stage.setHeight(top_margin+this.settings.header_height);
 
     for(i = 0; i<this.tags.length; i++){
         this.tagcloud_layer.add(this.tags[i]);
@@ -137,6 +142,7 @@ Tagcloud.prototype.draw = function(){
 
     var self = this;
     this.tagcloud_layer.on("mouseover", function(evt){
+        self.draw_label(evt);
         document.body.style.cursor = 'pointer';
         var tag_group = evt.targetNode.parent;
         tag_group.setOpacity(0.8);
@@ -144,6 +150,7 @@ Tagcloud.prototype.draw = function(){
     })
 
     this.tagcloud_layer.on("mouseout", function(evt){
+        self.delete_label();
         document.body.style.cursor = 'default';
         var tag_group = evt.targetNode.parent;
         tag_group.setOpacity(1);
@@ -158,7 +165,7 @@ Tagcloud.prototype.draw = function(){
 Tagcloud.prototype.set_coordinates = function(tag_indexes, row_length, max_height, top_margin){
     var i, height;
     var x = this.hack_round((this.settings.width - row_length)/2);
-    var y = max_height + top_margin;
+    var y = max_height + top_margin + this.settings.header_height;
     var font_size;
     
     for(i = 0; i < tag_indexes.length; i++){
@@ -167,6 +174,52 @@ Tagcloud.prototype.set_coordinates = function(tag_indexes, row_length, max_heigh
         x = x + this.tags[tag_indexes[i][0]].children[tag_indexes[i][1]].getWidth() + this.settings.tag_break_width;
     }
     return;
+}
+
+Tagcloud.prototype.draw_label = function(tag){
+    var i, line, text = [];
+    var text_group = tag.targetNode.parent;
+    var first = text_group.children[0];
+    var position = first.getPosition();
+    var first_width = first.getWidth();
+
+    for(i = 0; i<text_group.children.length; i++){
+        text.push(text_group.children[i].partialText);
+    }
+    text = text.join(" ");
+    
+    var tooltip = new Kinetic.Label({
+        x: position.x + this.hack_round(first_width/2),
+        y: position.y+5,
+        opacity: 1,
+        id: "label",
+    });
+
+    tooltip.add(new Kinetic.Tag({
+        fill: this.settings.label_color,
+        pointerDirection: 'down',
+        pointerWidth: 10,
+        pointerHeight: 10,
+        lineJoin: 'round',
+    }));
+    
+    tooltip.add(new Kinetic.Text({
+        text: this.data[text],
+        fontFamily: this.settings.font,
+        fontSize: 20,
+        padding: 8,
+        fill: 'white',
+        fontStyle: "bold",
+    }));
+
+    this.tagcloud_label_layer.add(tooltip);
+    this.tagcloud_label_layer.moveToTop();
+    this.tagcloud_label_layer.draw();
+}
+
+Tagcloud.prototype.delete_label = function(){
+    this.tagcloud_label_layer.destroyChildren();
+    this.tagcloud_label_layer.draw();
 }
 
 Tagcloud.prototype.draw_tag = function(tag, font_size){
