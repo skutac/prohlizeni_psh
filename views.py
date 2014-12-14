@@ -87,7 +87,7 @@ def suggest(request):
         contains = Ekvivalence.objects.filter(ekvivalent__icontains=text_input).exclude(ekvivalent__istartswith=text_input)
         alt_contains = Varianta.objects.filter(varianta__icontains=text_input, jazyk="en").exclude(varianta__istartswith=text_input, jazyk="en")
             
-        seznam = [heslo.ekvivalent for heslo in hesla]
+        seznam = [unescape_apostrophe(heslo.ekvivalent) for heslo in hesla]
             
         for heslo in alt:
             seznam.append(heslo.varianta)
@@ -139,11 +139,11 @@ def search(request):
     else:
 
         subjects = Ekvivalence.objects.filter(ekvivalent__istartswith = term).order_by("ekvivalent")
-        subjects = [{"id_heslo": s.id_heslo.id_heslo, "heslo":bold(term,s.ekvivalent)} for s in subjects]
+        subjects = [{"id_heslo": s.id_heslo.id_heslo, "heslo":bold(term,  unescape_apostrophe(s.ekvivalent))} for s in subjects]
         preferred.extend(subjects)
 
         subjects = Ekvivalence.objects.filter(ekvivalent__contains = term).order_by("ekvivalent").exclude(ekvivalent__istartswith=term)
-        subjects = [{"id_heslo": s.id_heslo.id_heslo, "heslo":bold(term,s.ekvivalent)} for s in subjects]
+        subjects = [{"id_heslo": s.id_heslo.id_heslo, "heslo":bold(term, unescape_apostrophe(s.ekvivalent))} for s in subjects]
         preferred.extend(subjects)
 
         subjects = Varianta.objects.filter(varianta__istartswith = term, jazyk=lang).order_by("varianta")
@@ -161,6 +161,9 @@ def search(request):
 def bold(substring, text):
     """Boldify substring within a given text"""
     return re.sub(substring, "".join(["<b>", substring, "</b>"]), text)
+
+def unescape_apostrophe(term):
+    return re.sub("&apos;", "'", term)
 
 def get_concept(request, subject_id):
     """Interface for subject retrieval in english"""
@@ -224,7 +227,7 @@ def get_concept_dict(subject_id, lang="cs"):
 
         if lang == "en":
 
-            ekvivalent = heslo["ekvivalent"]
+            ekvivalent = unescape_apostrophe(heslo["ekvivalent"])
             heslo["ekvivalent"] = heslo["heslo"]
             heslo["heslo"] = ekvivalent
         
@@ -304,13 +307,13 @@ def get_concept_dict(subject_id, lang="cs"):
             count = list(query_to_dicts("""SELECT pocet, pocet_hierarchie FROM psh_pocetzaznamu WHERE id_heslo = '%s'"""%p["podrazeny"]))[0]
             count_single = int(count["pocet"])
             count_hierarchy = int(count["pocet_hierarchie"])
-            heslo["podrazeny"].append({"id_heslo":p["podrazeny"], "heslo":p["heslo"], "pocet":count_single, "pocet_hierarchie": count_hierarchy})
+            heslo["podrazeny"].append({"id_heslo":p["podrazeny"], "heslo": unescape_apostrophe(p["heslo"]), "pocet":count_single, "pocet_hierarchie": count_hierarchy})
         
         for p in pribuzny:
-            heslo["pribuzny"].append({"id_heslo":p["pribuzny"], "heslo":p["heslo"]})
+            heslo["pribuzny"].append({"id_heslo":p["pribuzny"], "heslo":unescape_apostrophe(p["heslo"])})
         
         for v in varianta:
-            heslo["nepreferovany"][v["jazyk"]].append(v["varianta"])
+            heslo["nepreferovany"][v["jazyk"]].append(unescape_apostrophe(v["varianta"]))
     else:
         heslo = ""
 
@@ -387,9 +390,10 @@ def get_library_records(request):
         if lang == "en":
             subject = get_czech_equivalent(subject)
 
-        url = 'https://vufind.techlib.cz/vufind/Search/Results?lookfor="%s"&type=psh_facet&submit=Hledat'%subject
-        url = url.encode("utf8")
+        url_subject = urllib.quote(subject.encode("utf8"))
+        url = 'https://vufind.techlib.cz/vufind/Search/Results?lookfor="%s"&type=psh_facet&submit=Hledat'%url_subject
         url = re.sub(" ", "+", url)
+
         records = []
 
         catalogue = urllib2.urlopen(url)

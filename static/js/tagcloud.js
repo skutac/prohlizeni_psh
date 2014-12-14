@@ -222,11 +222,12 @@ Tagcloud.prototype.delete_label = function(){
     this.tagcloud_label_layer.draw();
 }
 
-Tagcloud.prototype.draw_tag = function(tag, font_size){
+Tagcloud.prototype.draw_tag = function(tag_string, font_size){
 	var color = this.get_color_for_value(font_size, this.settings.min_font_size, this.settings.max_font_size, this.settings.color_scale);
-	var split = tag.split(" ");
+	var split = tag_string.split(" ");
 	var group = new Kinetic.Group();
-	var i = 0, tag;
+	var i = 0;
+    var tag;
 
 	for(i; i<split.length; i++){
 		tag = this.text_ref.clone({
